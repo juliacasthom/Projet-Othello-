@@ -1,0 +1,45 @@
+\documentclass{article}
+\usepackage[letterpaper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+\usepackage{titlesec}
+% Pr les indentations  
+\titleformat{\subsection}
+  {\normalfont\bfseries}
+  {\hspace{1em}\thesubsection}
+  {0.5em}                       
+  {}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+
+\title{\textbf{Projet IN608N}}
+\author{Julia Castellano-Thomson, Andréa Cuvelier, Lucile Pradon, Sarah Khider}
+\date{12 mars 2026}
+\begin{document}
+% Peut-être ajouter image plateau de jeu ?
+\maketitle
+
+\section{\textbf{Description du jeu Othello}}
+
+Le jeu se joue sur un plateau de type \emph{othellier}, constitué d'une grille de huit cases par huit. Chaque joueur dispose de trente-deux pions de sa couleur, \emph{noir} ou \emph{blanc}. La position de départ est toujours identique : les pions noirs occupent les cases e4 et d5, tandis que les pions blancs se trouvent sur les cases d4 et e5. Le joueur possédant les pions noirs commence toujours la partie, puis les tours s'alternent entre les deux joueurs.
+
+\subsection{Règles de placement d'un pion}
+
+Pour poser un pion sur le plateau, certaines conditions doivent être respectées. La case ciblée doit être \emph{vide}, et le pion doit permettre d'\emph{encadrer} au moins un ou plusieurs pions adverses en formant un \emph{sandwich} entre le nouveau pion et un pion déjà présent de la même couleur. Ce sandwich peut être réalisé verticalement, horizontalement ou diagonalement, et il ne doit jamais y avoir de cases vides entre les deux pions encadrants. Il est impossible de poser un pion sans capturer au moins un pion adverse, c'est-à-dire qu'un sandwich “noir/noir” ou “blanc/blanc” est interdit. Il est également possible de réaliser des sandwiches dans plusieurs directions lors d'un seul coup.
+
+\subsection{Capture et conversion des pions}
+
+Lorsqu'un pion encadre un ou plusieurs pions adverses, ceux-ci changent de couleur pour devenir de la couleur du joueur actif. Seuls les pions directement inclus dans le sandwich sont convertis, sans effet en chaîne sur les autres pions du plateau.
+
+\subsection{Changement de joueur}
+
+Le changement de joueur s'effectue normalement à chaque tour. Toutefois, si l'adversaire ne peut jouer aucun coup valide, le joueur actif rejoue immédiatement. Dans le cas contraire, l'adversaire doit obligatoirement effectuer son tour.
+
+\subsection{Fin de partie}
+
+La partie prend fin dans l'un des cas suivants : lorsque toutes les cases du plateau sont remplies, lorsqu'un joueur n'a plus de pion de sa couleur sur le plateau, ou lorsqu'aucun des deux joueurs ne peut poser de pion légalement, ce que l'on appelle un \emph{blocage}. Le vainqueur est alors le joueur possédant le plus grand nombre de pions de sa couleur au moment de l'arrêt de la partie.
+
+\subsection{Règle optionnelle : le don de pion}
+
+Il est également possible d'ajouter une règle optionnelle afin de contourner le cas du \emph{wipeout}, c'est-à-dire lorsque un joueur se retrouve sans pion. Dans ce cas, l'adversaire doit lui donner un de ses pions, que le joueur pourra placer sur une case libre de son choix afin de continuer la partie. Cette règle n'est pas systématique mais peut être utilisée pour rendre le jeu plus dynamique et éviter une fin trop brutale.
+
+\end{document}
