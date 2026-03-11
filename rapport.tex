@@ -1,12 +1,14 @@
 \documentclass{article}
 \usepackage[letterpaper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
 \usepackage{titlesec}
+
 % Pr les indentations  
 \titleformat{\subsection}
   {\normalfont\bfseries}
   {\hspace{1em}\thesubsection}
   {0.5em}                       
   {}
+
 \usepackage{amsmath}
 \usepackage{graphicx}
 \usepackage[colorlinks=true, allcolors=blue]{hyperref}
@@ -14,8 +16,9 @@
 \title{\textbf{Projet IN608N}}
 \author{Julia Castellano-Thomson, Andréa Cuvelier, Lucile Pradon, Sarah Khider}
 \date{12 mars 2026}
+
 \begin{document}
-% Peut-être ajouter image plateau de jeu ?
+
 \maketitle
 
 \section{\textbf{Description du jeu Othello}}
@@ -50,14 +53,39 @@ Nous avons choisi de réaliser ce projet en \emph{langage C}. Ce langage est rec
 
 Le plateau de jeu sera représenté par un tableau à deux dimensions de taille $8 \times 8$. Chaque case contiendra un entier pour indiquer si elle est \emph{vide}, ou si elle contient un pion \emph{noir} ou \emph{blanc}. Cette structure simple nous permettra de copier facilement le plateau pour simuler des coups à l'avance.
 
+\subsection{Structures de données}
+
+Afin de faciliter la manipulation du plateau et des coups possibles, nous utiliserons plusieurs structures de données. Une structure \texttt{Plateau} permettra de regrouper l'état du plateau ainsi que les informations nécessaires au déroulement de la partie.
+
+Une autre structure \texttt{Coup} pourra être utilisée pour représenter un coup possible, contenant par exemple les coordonnées de la case jouée ainsi que la liste des pions retournés. Cela permettra à l'intelligence artificielle de simuler facilement différents scénarios de jeu sans modifier directement le plateau principal.
+
+Ces structures rendent le programme plus lisible et facilitent la maintenance du code en regroupant les informations liées au jeu dans des objets logiques.
+
 \subsection{Parties du programme}
 
 Le code sera organisé autour de trois modules principaux :
+
 \begin{itemize}
-    \item \textbf{Le moteur de jeu :} Il contiendra les fonctions pour vérifier si un coup est possible, retourner les pions capturés et dire quand la partie est finie.
-    \item \textbf{L'intelligence artificielle :} Ce module servira à calculer le meilleur coup à jouer pour l'ordinateur.
+    \item \textbf{Le moteur de jeu :} Il contiendra les fonctions pour vérifier si un coup est possible, retourner les pions capturés et déterminer quand la partie est terminée.
+    \item \textbf{L'intelligence artificielle :} Ce module servira à calculer le meilleur coup à jouer pour l'ordinateur en analysant plusieurs coups à l'avance.
     \item \textbf{L'interface :} Elle s'occupera d'afficher la grille dans la console et de demander aux joueurs de choisir leurs cases.
 \end{itemize}
+
+
+\subsection{Déroulement d'une partie}
+
+Le programme suivra une boucle principale représentant le déroulement de la partie. À chaque tour, les étapes suivantes seront exécutées :
+
+\begin{enumerate}
+    \item Affichage du plateau actuel.
+    \item Calcul de la liste des coups valides pour le joueur actif.
+    \item Si aucun coup n'est possible, le tour passe à l'adversaire.
+    \item Sinon, le joueur (humain ou IA) choisit un coup.
+    \item Le coup est appliqué et les pions capturés sont retournés.
+    \item Le programme vérifie si la partie est terminée.
+\end{enumerate}
+
+Cette organisation permet de séparer clairement la logique de jeu, l'interaction utilisateur et les décisions de l'intelligence artificielle.
 
 \section{\textbf{Algorithmes utilisés}}
 
