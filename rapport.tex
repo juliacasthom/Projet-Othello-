@@ -42,4 +42,41 @@ La partie prend fin dans l'un des cas suivants : lorsque toutes les cases du pla
 
 Il est également possible d'ajouter une règle optionnelle afin de contourner le cas du \emph{wipeout}, c'est-à-dire lorsque un joueur se retrouve sans pion. Dans ce cas, l'adversaire doit lui donner un de ses pions, que le joueur pourra placer sur une case libre de son choix afin de continuer la partie. Cette règle n'est pas systématique mais peut être utilisée pour rendre le jeu plus dynamique et éviter une fin trop brutale.
 
+\section{\textbf{Architecture du projet et choix techniques}}
+
+Nous avons choisi de réaliser ce projet en \emph{langage C}. Ce langage est reconnu pour sa rapidité et sa gestion efficace de la mémoire, ce qui est important pour les calculs de l'intelligence artificielle. Le programme sera divisé en plusieurs fichiers pour séparer les règles du jeu, les algorithmes de décision et l'interface avec l'utilisateur.
+
+\subsection{Organisation des données}
+
+Le plateau de jeu sera représenté par un tableau à deux dimensions de taille $8 \times 8$. Chaque case contiendra un entier pour indiquer si elle est \emph{vide}, ou si elle contient un pion \emph{noir} ou \emph{blanc}. Cette structure simple nous permettra de copier facilement le plateau pour simuler des coups à l'avance.
+
+\subsection{Parties du programme}
+
+Le code sera organisé autour de trois modules principaux :
+\begin{itemize}
+    \item \textbf{Le moteur de jeu :} Il contiendra les fonctions pour vérifier si un coup est possible, retourner les pions capturés et dire quand la partie est finie.
+    \item \textbf{L'intelligence artificielle :} Ce module servira à calculer le meilleur coup à jouer pour l'ordinateur.
+    \item \textbf{L'interface :} Elle s'occupera d'afficher la grille dans la console et de demander aux joueurs de choisir leurs cases.
+\end{itemize}
+
+\section{\textbf{Algorithmes utilisés}}
+
+L'objectif est de créer une intelligence artificielle capable de jouer contre un humain. Pour cela, nous allons utiliser les algorithmes suivants :
+
+\subsection{Minimax et élagage Alpha-Beta}
+
+Pour le mode "Joueur contre IA", nous utiliserons l'algorithme \emph{Minimax}. Son rôle est de simuler les tours suivants pour choisir le coup le plus avantageux pour l'ordinateur. Pour gagner du temps dans les calculs, nous ajouterons l'\emph{élagage Alpha-Beta}. Cela permet d'ignorer les mauvaises stratégies sans avoir à les explorer entièrement, ce qui rend l'IA plus rapide.
+
+\subsection{Fonction d'évaluation}
+
+Comme l'ordinateur ne peut pas prévoir tous les coups jusqu'à la fin de la partie, il utilisera une \emph{fonction d'évaluation}. Cette fonction donnera une "note" au plateau à un moment donné selon des critères stratégiques, comme le fait de posséder les coins ou d'avoir beaucoup de choix de coups possibles (la mobilité).
+
+\subsection{Algorithme A* pour le mode solo}
+
+Pour le mode \emph{solo}, nous utiliserons l'algorithme \emph{A*}. Il servira à résoudre des situations précises en cherchant le chemin le plus court pour atteindre un objectif, par exemple pour gagner avec le plus petit nombre de coups possible.
+
+\section{\textbf{Organisation du groupe}}
+
+Nous allons travailler ensemble sur la structure de base, puis nous répartirons les tâches pour la partie algorithmique. Les premières étapes seront de coder les règles du jeu et l'affichage simple, avant de passer au développement des intelligences artificielles et aux tests pour régler la difficulté du jeu.
+
 \end{document}
