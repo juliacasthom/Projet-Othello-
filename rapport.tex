@@ -51,7 +51,12 @@ Nous avons choisi de réaliser ce projet en \emph{langage C}. Ce langage est rec
 
 \subsection{Organisation des données}
 
-Le plateau de jeu sera représenté par un tableau à deux dimensions de taille $8 \times 8$. Chaque case contiendra un entier pour indiquer si elle est \emph{vide}, ou si elle contient un pion \emph{noir} ou \emph{blanc}. Cette structure simple nous permettra de copier facilement le plateau pour simuler des coups à l'avance.
+Le plateau de jeu sera représenté par un tableau à deux dimensions de taille $8 \times 8$. Chaque case contiendra un entier pour indiquer si elle est \emph{vide}, ou si elle contient un pion \emph{noir} ou \emph{blanc}. 
+\begin{itemize}
+  \item 0 pour une case vide,
+  \item 1 pour un pion noir,
+  \item -1 pour un pion blanc.
+\end{itemize}Cette structure simple nous permettra de copier facilement le plateau pour simuler des coups à l'avance.
 
 \subsection{Structures de données}
 
