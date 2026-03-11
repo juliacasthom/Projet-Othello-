@@ -52,11 +52,15 @@ Nous avons choisi de réaliser ce projet en \emph{langage C}. Ce langage est rec
 \subsection{Organisation des données}
 
 Le plateau de jeu sera représenté par un tableau à deux dimensions de taille $8 \times 8$. Chaque case contiendra un entier pour indiquer si elle est \emph{vide}, ou si elle contient un pion \emph{noir} ou \emph{blanc}. 
+Nous utiliserons par exemple les valeurs suivantes :
+
 \begin{itemize}
   \item 0 pour une case vide,
   \item 1 pour un pion noir,
   \item -1 pour un pion blanc.
-\end{itemize}Cette structure simple nous permettra de copier facilement le plateau pour simuler des coups à l'avance.
+\end{itemize}
+
+Cette structure simple nous permettra de copier facilement le plateau pour simuler des coups à l'avance.
 
 \subsection{Structures de données}
 
@@ -107,6 +111,11 @@ Comme l'ordinateur ne peut pas prévoir tous les coups jusqu'à la fin de la par
 \subsection{Algorithme A* pour le mode solo}
 
 Pour le mode \emph{solo}, nous utiliserons l'algorithme \emph{A*}. Il servira à résoudre des situations précises en cherchant le chemin le plus court pour atteindre un objectif, par exemple pour gagner avec le plus petit nombre de coups possible.
+
+\section{\textbf{Défis techniques}}
+
+La première difficulté du projet concerne la gestion des coups valides sur le plateau. En effet, lors du placement d’un pion, le programme doit vérifier les huit directions possibles (horizontales, verticales et diagonales) afin de déterminer si un « sandwich » est formé entre deux pions de même couleur, sans qu’une case vide n’apparaisse entre eux.
+De même, un autre défi réside dans la complexité de l’algorithme Minimax utilisé pour l’intelligence artificielle. Le nombre de configurations possibles dans le jeu d’Othello est très important, ce qui peut entraîner un grand nombre de calculs. Pour réduire le temps de recherche, l’algorithme sera donc optimisé à l’aide de l’élagage Alpha-Beta, qui permet d’éviter l’exploration de branches inutiles.
 
 \section{\textbf{Organisation du groupe}}
 
