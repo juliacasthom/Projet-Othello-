@@ -1,0 +1,125 @@
+\documentclass{article}
+\usepackage[letterpaper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+\usepackage{titlesec}
+
+% Pr les indentations  
+\titleformat{\subsection}
+  {\normalfont\bfseries}
+  {\hspace{1em}\thesubsection}
+  {0.5em}                       
+  {}
+
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+
+\title{\textbf{Projet IN608N}}
+\author{Julia Castellano-Thomson, Andréa Cuvelier, Lucile Pradon, Sarah Khider}
+\date{12 mars 2026}
+
+\begin{document}
+
+\maketitle
+
+\section{\textbf{Description du jeu Othello}}
+
+Le jeu se joue sur un plateau de type \emph{othellier}, constitué d'une grille de huit cases par huit. Chaque joueur dispose de trente-deux pions de sa couleur, \emph{noir} ou \emph{blanc}. La position de départ est toujours identique : les pions noirs occupent les cases e4 et d5, tandis que les pions blancs se trouvent sur les cases d4 et e5. Le joueur possédant les pions noirs commence toujours la partie, puis les tours s'alternent entre les deux joueurs.
+
+\subsection{Règles de placement d'un pion}
+
+Pour poser un pion sur le plateau, certaines conditions doivent être respectées. La case ciblée doit être \emph{vide}, et le pion doit permettre d'\emph{encadrer} au moins un ou plusieurs pions adverses en formant un \emph{sandwich} entre le nouveau pion et un pion déjà présent de la même couleur. Ce sandwich peut être réalisé verticalement, horizontalement ou diagonalement, et il ne doit jamais y avoir de cases vides entre les deux pions encadrants. Il est impossible de poser un pion sans capturer au moins un pion adverse, c'est-à-dire qu'un sandwich “noir/noir” ou “blanc/blanc” est interdit. Il est également possible de réaliser des sandwiches dans plusieurs directions lors d'un seul coup.
+
+\subsection{Capture et conversion des pions}
+
+Lorsqu'un pion encadre un ou plusieurs pions adverses, ceux-ci changent de couleur pour devenir de la couleur du joueur actif. Seuls les pions directement inclus dans le sandwich sont convertis, sans effet en chaîne sur les autres pions du plateau.
+
+\subsection{Changement de joueur}
+
+Le changement de joueur s'effectue normalement à chaque tour. Toutefois, si l'adversaire ne peut jouer aucun coup valide, le joueur actif rejoue immédiatement. Dans le cas contraire, l'adversaire doit obligatoirement effectuer son tour.
+
+\subsection{Fin de partie}
+
+La partie prend fin dans l'un des cas suivants : lorsque toutes les cases du plateau sont remplies, lorsqu'un joueur n'a plus de pion de sa couleur sur le plateau, ou lorsqu'aucun des deux joueurs ne peut poser de pion légalement, ce que l'on appelle un \emph{blocage}. Le vainqueur est alors le joueur possédant le plus grand nombre de pions de sa couleur au moment de l'arrêt de la partie.
+
+\subsection{Règle optionnelle : le don de pion}
+
+Il est également possible d'ajouter une règle optionnelle afin de contourner le cas du \emph{wipeout}, c'est-à-dire lorsque un joueur se retrouve sans pion. Dans ce cas, l'adversaire doit lui donner un de ses pions, que le joueur pourra placer sur une case libre de son choix afin de continuer la partie. Cette règle n'est pas systématique mais peut être utilisée pour rendre le jeu plus dynamique et éviter une fin trop brutale.
+
+\section{\textbf{Architecture du projet et choix techniques}}
+
+Nous avons choisi de réaliser ce projet en \emph{langage C}. Ce langage est reconnu pour sa rapidité et sa gestion efficace de la mémoire, ce qui est important pour les calculs de l'intelligence artificielle. Le programme sera divisé en plusieurs fichiers pour séparer les règles du jeu, les algorithmes de décision et l'interface avec l'utilisateur.
+
+\subsection{Organisation des données}
+
+Le plateau de jeu sera représenté par un tableau à deux dimensions de taille $8 \times 8$. Chaque case contiendra un entier pour indiquer si elle est \emph{vide}, ou si elle contient un pion \emph{noir} ou \emph{blanc}. 
+Nous utiliserons par exemple les valeurs suivantes :
+
+\begin{itemize}
+  \item 0 pour une case vide,
+  \item 1 pour un pion noir,
+  \item -1 pour un pion blanc.
+\end{itemize}
+
+Cette structure simple nous permettra de copier facilement le plateau pour simuler des coups à l'avance.
+
+\subsection{Structures de données}
+
+Afin de faciliter la manipulation du plateau et des coups possibles, nous utiliserons plusieurs structures de données. Une structure \texttt{Plateau} permettra de regrouper l'état du plateau ainsi que les informations nécessaires au déroulement de la partie.
+
+Une autre structure \texttt{Coup} pourra être utilisée pour représenter un coup possible, contenant par exemple les coordonnées de la case jouée ainsi que la liste des pions retournés. Cela permettra à l'intelligence artificielle de simuler facilement différents scénarios de jeu sans modifier directement le plateau principal.
+
+Ces structures rendent le programme plus lisible et facilitent la maintenance du code en regroupant les informations liées au jeu dans des objets logiques.
+
+\subsection{Parties du programme}
+
+Le code sera organisé autour de trois modules principaux :
+
+\begin{itemize}
+    \item \textbf{Le moteur de jeu :} Il contiendra les fonctions pour vérifier si un coup est possible, retourner les pions capturés et déterminer quand la partie est terminée.
+    \item \textbf{L'intelligence artificielle :} Ce module servira à calculer le meilleur coup à jouer pour l'ordinateur en analysant plusieurs coups à l'avance.
+    \item \textbf{L'interface :} Elle s'occupera d'afficher la grille dans la console et de demander aux joueurs de choisir leurs cases.
+\end{itemize}
+
+
+\subsection{Déroulement d'une partie}
+
+Le programme suivra une boucle principale représentant le déroulement de la partie. À chaque tour, les étapes suivantes seront exécutées :
+
+\begin{enumerate}
+    \item Affichage du plateau actuel.
+    \item Calcul de la liste des coups valides pour le joueur actif.
+    \item Si aucun coup n'est possible, le tour passe à l'adversaire.
+    \item Sinon, le joueur (humain ou IA) choisit un coup.
+    \item Le coup est appliqué et les pions capturés sont retournés.
+    \item Le programme vérifie si la partie est terminée.
+\end{enumerate}
+
+Cette organisation permet de séparer clairement la logique de jeu, l'interaction utilisateur et les décisions de l'intelligence artificielle.
+
+\section{\textbf{Algorithmes utilisés}}
+
+L'objectif est de créer une intelligence artificielle capable de jouer contre un humain. Pour cela, nous allons utiliser les algorithmes suivants :
+
+\subsection{Minimax et élagage Alpha-Beta}
+
+Pour le mode "Joueur contre IA", nous utiliserons l'algorithme \emph{Minimax}. Son rôle est de simuler les tours suivants pour choisir le coup le plus avantageux pour l'ordinateur. Pour gagner du temps dans les calculs, nous ajouterons l'\emph{élagage Alpha-Beta}. Cela permet d'ignorer les mauvaises stratégies sans avoir à les explorer entièrement, ce qui rend l'IA plus rapide.
+
+\subsection{Fonction d'évaluation}
+
+Comme l'ordinateur ne peut pas prévoir tous les coups jusqu'à la fin de la partie, il utilisera une \emph{fonction d'évaluation}. Cette fonction donnera une "note" au plateau à un moment donné selon des critères stratégiques, comme le fait de posséder les coins ou d'avoir beaucoup de choix de coups possibles (la mobilité).
+
+\subsection{Algorithme A* pour le mode solo}
+
+Pour le mode \emph{solo}, nous utiliserons l'algorithme \emph{A*}. Il servira à résoudre des situations précises en cherchant le chemin le plus court pour atteindre un objectif, par exemple pour gagner avec le plus petit nombre de coups possible.
+
+\section{\textbf{Défis techniques}}
+
+La première difficulté du projet concerne la gestion des coups valides sur le plateau. En effet, lors du placement d’un pion, le programme doit vérifier les huit directions possibles (horizontales, verticales et diagonales) afin de déterminer si un \emph{sandwich} est formé entre deux pions de même couleur, sans qu’une case vide n’apparaisse entre eux.
+
+De même, un autre défi réside dans la complexité de l’algorithme \emph{Minimax} utilisé pour l’intelligence artificielle. Le nombre de configurations possibles dans le jeu d’Othello est très important, ce qui peut entraîner un grand nombre de calculs. Pour réduire le temps de recherche, l’algorithme sera donc optimisé à l’aide de l’\emph{élagage Alpha-Beta}, qui permet d’éviter l’exploration de branches inutiles.
+
+\section{\textbf{Organisation du groupe}}
+
+Nous allons travailler ensemble sur la structure de base, puis nous répartirons les tâches pour la partie algorithmique. Les premières étapes seront de coder les règles du jeu et l'affichage simple, avant de passer au développement des intelligences artificielles et aux tests pour régler la difficulté du jeu.
+
+\end{document}
