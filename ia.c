@@ -16,6 +16,11 @@ const int POIDS[8][8] = {
     { 100, -20,  10,   5,   5,  10, -20, 100}
 };
 
+typedef struct {
+    int x;
+    int y;
+} Coup;
+
 
 /*
  * Calcule le nombre de pions stables sur les bords pour un joueur donné.
@@ -77,6 +82,22 @@ int calculer_stabilite_bords(int plateau[8][8], int joueur) {
     return nb_stables;
 }
 
+int generer_coups_possibles(int plateau[8][8], int joueur, Coup liste_coups[60]) {
+    int nb_coups = 0;
+
+    for (int i = 0; i < 8; i++) {
+        for (int j = 0; j < 8; j++) {
+            // On utilise votre fonction de vérification de validité (le "sandwich")
+            if (est_coup_valide(plateau, i, j, joueur)) {
+                liste_coups[nb_coups].x = i;
+                liste_coups[nb_coups].y = j;
+                nb_coups++;
+            }
+        }
+    }
+    return nb_coups; // Retourne le nombre de coups trouvés
+}
+
 
 int evaluer_plateau(int plateau[8][8], int ia, int humain) {
     int score = 0;
@@ -95,4 +116,28 @@ int evaluer_plateau(int plateau[8][8], int ia, int humain) {
     score += (stabilite_ia - stabilite_humain) * 200; 
     
     return score;
+}
+
+
+int minimax(int plateau[8][8], int profondeur, int joueur) {
+    Coup coups[60];
+    int nb_coups = generer_coups_possibles(plateau, joueur, coups);
+
+    // Cas où le joueur ne peut pas jouer
+    if (nb_coups == 0) {
+        // Si l'autre ne peut pas jouer non plus -> Fin de partie
+        if (generer_coups_possibles(plateau, adversaire(joueur), coups) == 0) {
+            return evaluer_plateau(plateau);
+        }
+        // Sinon, on passe le tour (on descend d'un étage)
+        return minimax(plateau, profondeur - 1, adversaire(joueur));
+    }
+
+    // Sinon, on explore chaque coup possible...
+    for (int i = 0; i < nb_coups; i++) {
+        // 1. Copier le plateau
+        // 2. Jouer le coup coups[i] sur la copie
+        // 3. Appeler minimax récursivement
+    }
+    // ...
 }
