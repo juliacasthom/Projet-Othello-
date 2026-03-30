@@ -35,3 +35,12 @@ Coup lireCoup() {
     return c;
 }
 
+int coupValide(Plateau *p, Coup c){
+    if (c.ligne<0 || c.ligne>=SIZE || c.colonne<0 || c.colonne>=SIZE) {
+        return 0; // coup hors plateau 
+    }
+    if (p->cases[c.ligne][c.colonne]!=VIDE) {
+        return 0; // case déjà occupée 
+    }
+    return 1;
+}

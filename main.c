@@ -24,7 +24,11 @@ int main(){
 
     // test lecture coup
     Coup c= lireCoup();
-    printf("Coup lu: ligne %d, colonne %d\n", c.ligne, c.colonne);
+    if (coupValide(&p, c)){
+        printf("Coup valide\n");
+    } else {
+        printf("Coup invalide\n");
+    }
 
     return 0;
 }

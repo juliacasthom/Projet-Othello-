@@ -15,7 +15,7 @@ typedef struct{
     int ligne;
     int colonne;
 }Coup;
+
 Coup lireCoup();
-
-
 void afficher_Plateau(Plateau *p);
+int coupValide(Plateau *p, Coup c);
