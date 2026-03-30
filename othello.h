@@ -11,8 +11,9 @@ typedef struct{
     int scoreBlanc;
 }Plateau; 
 
-typedef struct{
-    // structure Coup à remplir 
-}Coup; 
+typedef struct {
+    int x;
+    int y;
+} Coup;
 
 void afficher_Plateau(Plateau *p);
