@@ -1,4 +1,5 @@
 #include "othello.h"
+#include <stdio.h>
 
 int main(){
     Plateau p;
@@ -20,6 +21,10 @@ int main(){
     p.joueurActuel=NOIR;
 
     afficher_Plateau(&p); 
+
+    // test lecture coup
+    Coup c= lireCoup();
+    printf("Coup lu: ligne %d, colonne %d\n", c.ligne, c.colonne);
 
     return 0;
 }

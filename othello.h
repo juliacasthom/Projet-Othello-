@@ -12,7 +12,10 @@ typedef struct{
 }Plateau; 
 
 typedef struct{
-    // structure Coup à remplir 
-}Coup; 
+    int ligne;
+    int colonne;
+}Coup;
+Coup lireCoup();
+
 
 void afficher_Plateau(Plateau *p);
