@@ -101,20 +101,48 @@ int generer_coups_possibles(int plateau[8][8], int joueur, Coup liste_coups[60])
 
 int evaluer_plateau(int plateau[8][8], int ia, int humain) {
     int score = 0;
-    
-    // 1. Matrice des poids (Position)
+    int nb_pions_ia = 0;
+    int nb_pions_humain = 0;
+    int nb_cases_vides = 0;
+
+    // --- 1. POSITION (POIDS DES CASES) ---
+    // Cette fonction parcourt le plateau et fait la somme selon la matrice de poids
     score += calculer_score_position(plateau, ia, humain); 
+
+    // --- 2. MOBILITÉ (LIBERTÉ DE MOUVEMENT) ---
+    // On compte combien de coups l'IA peut jouer vs l'Humain
+    int mob_ia = calculer_nb_coups_possibles(plateau, ia);
+    int mob_humain = calculer_nb_coups_possibles(plateau, humain);
     
-    // 2. Mobilité (Différence des coups possibles)
-    // score += ...
-    
-    // 3. Stabilité (Nouveau !)
+    // On donne un poids important à la mobilité (ex: 50 points par coup d'avance)
+    score += (mob_ia - mob_humain) * 50;
+
+    // --- 3. STABILITÉ (DÉFENSE DES BORDS) ---
     int stabilite_ia = calculer_stabilite_bords(plateau, ia);
     int stabilite_humain = calculer_stabilite_bords(plateau, humain);
     
-    // On donne une énorme valeur à la stabilité (ex: 200 points par pion stable)
+    // La stabilité est très précieuse (200 points par pion stable)
     score += (stabilite_ia - stabilite_humain) * 200; 
-    
+
+    // --- 4. MATÉRIEL (COMPTAGE DES PIONS) ---
+    // On compte les pions présents et les cases vides pour savoir si on est en fin de partie
+    for (int i = 0; i < 8; i++) {
+        for (int j = 0; j < 8; j++) {
+            if (plateau[i][j] == ia) nb_pions_ia++;
+            else if (plateau[i][j] == humain) nb_pions_humain++;
+            else nb_cases_vides++;
+        }
+    }
+
+    // Stratégie différente selon la phase de jeu :
+    if (nb_cases_vides > 10) {
+        // En début/milieu de partie, le nombre de pions compte peu (poids de 1)
+        score += (nb_pions_ia - nb_pions_humain) * 1;
+    } else {
+        // En fin de partie (moins de 10 cases), gagner des pions devient la priorité
+        score += (nb_pions_ia - nb_pions_humain) * 100;
+    }
+
     return score;
 }
 
