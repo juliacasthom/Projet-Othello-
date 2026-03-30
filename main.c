@@ -23,11 +23,12 @@ int main(){
     afficher_Plateau(&p); 
 
     // test lecture coup
-    Coup c= lireCoup();
-    if (coupValide(&p, c)){
-        printf("Coup valide\n");
+   Coup c = lireCoup();
+
+    if (captureDirection(&p, c, 0, 1)) { // vers la droite
+        printf("Capture possible à droite \n");
     } else {
-        printf("Coup invalide\n");
+        printf("Pas de capture à droite.\n");
     }
 
     return 0;

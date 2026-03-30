@@ -40,7 +40,35 @@ int coupValide(Plateau *p, Coup c){
         return 0; // coup hors plateau 
     }
     if (p->cases[c.ligne][c.colonne]!=VIDE) {
-        return 0; // case déjà occupée 
+        return 0;
     }
     return 1;
+}
+
+int captureDirection(Plateau *p, Coup c, int dx, int dy) {
+    int x = c.ligne + dx;
+    int y = c.colonne + dy;
+    int adversaire = -p->joueurActuel;
+
+    // verif si au moins 1 pion adv a coté
+    if (x<0 || x>=SIZE || y<0 || y>=SIZE || p->cases[x][y]!=adversaire)
+        return 0; // pas de capture possible dans cette direction 
+    
+    if (p->cases[x][y]!=adversaire) 
+        return 0;
+    
+    x += dx;
+    y += dy;
+
+    while (x>=0 && x<SIZE && y>=0 && y<SIZE) {
+        if (p->cases[x][y]==VIDE)
+            return 0; // pas de capture possible dans cette direction 
+        
+        if (p->cases[x][y]==p->joueurActuel) 
+            return 1; // capture possible dans cette direction 
+        
+        x += dx;
+        y += dy;
+    }
+    return 0; 
 }
