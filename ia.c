@@ -98,6 +98,31 @@ int generer_coups_possibles(int plateau[8][8], int joueur, Coup liste_coups[60])
     return nb_coups; // Retourne le nombre de coups trouvés
 }
 
+Coup choisir_meilleur_coup(int plateau[8][8], int ia, int humain) {
+    Coup coups[60];
+    int nb_coups = generer_coups_possibles(plateau, ia, coups);
+    
+    Coup bestMove = coups[0];
+    int bestScore = -1000000;
+    int profondeur = 4; // Tu peux régler la difficulté ici
+
+    for (int i = 0; i < nb_coups; i++) {
+        int plateauCopie[8][8];
+        for(int r=0; r<8; r++) for(int c=0; c<8; c++) plateauCopie[r][c] = plateau[r][c];
+        
+        jouer_coup(plateauCopie, coups[i].x, coups[i].y, ia);
+        
+        // On appelle le minimax pour voir ce que ce coup rapporte
+        int score = minimax(plateauCopie, profondeur - 1, false, ia, humain);
+        
+        if (score > bestScore) {
+            bestScore = score;
+            bestMove = coups[i];
+        }
+    }
+    return bestMove;
+}
+
 
 int evaluer_plateau(int plateau[8][8], int ia, int humain) {
     int score = 0;
@@ -147,25 +172,49 @@ int evaluer_plateau(int plateau[8][8], int ia, int humain) {
 }
 
 
-int minimax(int plateau[8][8], int profondeur, int joueur) {
+int minimax(int plateau[8][8], int depth, bool isMax, int ia, int humain) {
+    // 1. Condition d'arrêt : profondeur atteinte ou fin de partie
+    // (Ici on simplifie : si plus de coups possibles, on évalue)
     Coup coups[60];
-    int nb_coups = generer_coups_possibles(plateau, joueur, coups);
+    int nb_coups = generer_coups_possibles(plateau, isMax ? ia : humain, coups);
 
-    // Cas où le joueur ne peut pas jouer
-    if (nb_coups == 0) {
-        // Si l'autre ne peut pas jouer non plus -> Fin de partie
-        if (generer_coups_possibles(plateau, adversaire(joueur), coups) == 0) {
-            return evaluer_plateau(plateau);
+    if (depth == 0 || nb_coups == 0) {
+        return evaluer_plateau(plateau, ia, humain);
+    }
+
+    if (isMax) { // Tour de l'IA (Programme)
+        int bestScore = -1000000; // Équivalent de -INFINITY
+
+        for (int i = 0; i < nb_coups; i++) {
+            // Simulation du coup sur une copie pour ne pas abîmer le vrai plateau
+            int plateauCopie[8][8];
+            for(int r=0; r<8; r++) for(int c=0; c<8; c++) plateauCopie[r][c] = plateau[r][c];
+            
+            jouer_coup(plateauCopie, coups[i].x, coups[i].y, ia); // Ta fonction qui retourne les pions
+            
+            int score = minimax(plateauCopie, depth - 1, false, ia, humain);
+            
+            if (score > bestScore) {
+                bestScore = score;
+            }
         }
-        // Sinon, on passe le tour (on descend d'un étage)
-        return minimax(plateau, profondeur - 1, adversaire(joueur));
-    }
+        return bestScore;
+    } 
+    else { // Tour de l'Adversaire (Humain)
+        int bestScore = 1000000; // Équivalent de +INFINITY
 
-    // Sinon, on explore chaque coup possible...
-    for (int i = 0; i < nb_coups; i++) {
-        // 1. Copier le plateau
-        // 2. Jouer le coup coups[i] sur la copie
-        // 3. Appeler minimax récursivement
+        for (int i = 0; i < nb_coups; i++) {
+            int plateauCopie[8][8];
+            for(int r=0; r<8; r++) for(int c=0; c<8; c++) plateauCopie[r][c] = plateau[r][c];
+            
+            jouer_coup(plateauCopie, coups[i].x, coups[i].y, humain);
+            
+            int score = minimax(plateauCopie, depth - 1, true, ia, humain);
+            
+            if (score < bestScore) {
+                bestScore = score;
+            }
+        }
+        return bestScore;
     }
-    // ...
 }
