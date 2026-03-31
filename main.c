@@ -4,11 +4,11 @@
 int main(){
     Plateau p;
 
-    for(int i=0; i<SIZE; i++){ // remplir quelques cases pour le test 
-        for(int j=0; j<SIZE; j++) {
+    for(int i=0; i<SIZE; i++) // remplir quelques cases pour le test 
+        for(int j=0; j<SIZE; j++) 
             p.cases[i][j]=VIDE;
-        }
-    }
+        
+    
 
     // pions de départ 
     p.cases[3][3]=BLANC;
@@ -20,15 +20,36 @@ int main(){
     p.scoreBlanc=2;
     p.joueurActuel=NOIR;
 
-    afficher_Plateau(&p); 
+    while(1) {
+        afficher_Plateau(&p);
+        Coup c = lireCoup();
 
-    // test lecture coup
-   Coup c = lireCoup();
-
-    if (captureDirection(&p, c, 0, 1)) { // vers la droite
-        printf("Capture possible à droite \n");
-    } else {
-        printf("Pas de capture à droite.\n");
+        if (coupValide(&p, c)) {
+            jouerCoup(&p, c);
+            changerJoueur(&p);
+        } else {
+            printf("Coup invalide, essayez à nouveau.\n");
+            continue;
+        }
+        // vérif s'il reste coups possibles
+        int coupsPossibles=0;
+        for (int i=0; i<SIZE; i++)
+            for (int j=0; j<SIZE; j++) {
+                Coup test={i,j};
+                if (coupValide(&p, test)) 
+                    coupsPossibles=1;   
+            }
+    
+        if (!coupsPossibles) {
+            printf("\nPartie terminée\n");
+            afficher_Plateau(&p);
+            if (p.scoreNoir > p.scoreBlanc) 
+                printf("Les pions NOIR gagnent\n");
+            else if (p.scoreBlanc > p.scoreNoir)
+                printf("Les pions BLANC gagnent\n");
+            else
+                printf("Match nul\n");
+        }    
     }
 
     return 0;
