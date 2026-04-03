@@ -3,7 +3,7 @@
 
 // --- LOGIQUE PURE (Tableau 8x8) ---
 
-int captureDirection(int p[8][8], int r, int c, int dx, int dy, int joueur) {
+/*int captureDirection(int p[8][8], int r, int c, int dx, int dy, int joueur) {
     int x = r + dx;
     int y = c + dy;
     if (x < 0 || x >= SIZE || y < 0 || y >= SIZE || p[x][y] != -joueur) return 0;
@@ -14,15 +14,15 @@ int captureDirection(int p[8][8], int r, int c, int dx, int dy, int joueur) {
         x += dx; y += dy;
     }
     return 0;
-}
+}*/
 
-int est_coup_valide(int p[8][8], int r, int c, int joueur) {
+/*int est_coup_valide(int p[8][8], int r, int c, int joueur) {
     if (r < 0 || r >= SIZE || c < 0 || c >= SIZE || p[r][c] != VIDE) return 0;
     int dirs[8][2] = {{-1,-1},{-1,0},{-1,1},{0,-1},{0,1},{1,-1},{1,0},{1,1}};
     for (int i = 0; i < 8; i++) 
         if (captureDirection(p, r, c, dirs[i][0], dirs[i][1], joueur)) return 1;
     return 0;
-}
+}*/
 
 void executer_coup(int p[8][8], int r, int c, int joueur) {
     int dirs[8][2] = {{-1,-1},{-1,0},{-1,1},{0,-1},{0,1},{1,-1},{1,0},{1,1}};

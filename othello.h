@@ -8,6 +8,7 @@
 #define NOIR 1
 #define BLANC -1
 
+// Structure pour le plateau
 typedef struct {
     int cases[SIZE][SIZE]; 
     int joueurActuel; 
@@ -15,23 +16,20 @@ typedef struct {
     int scoreBlanc;
 } Plateau; 
 
+// Structure pour un coup
 typedef struct {
     int ligne;
     int colonne;
 } Coup;
 
-// Fonctions d'affichage et de lecture (Interface)
-void afficher_Plateau(Plateau *p);
-Coup lireCoup();
-
-// --- LOGIQUE DE JEU (Utilisée par le Main et l'IA) ---
-// Version pour le tableau int[8][8] (utilisée par l'IA)
+// --- FONCTIONS DU MOTEUR DE JEU (moteur.c) ---
 int est_coup_valide(int p[8][8], int r, int c, int joueur);
-void executer_coup(int p[8][8], int r, int c, int joueur);
+void jouer_coup(int p[8][8], int r, int c, int joueur);
 
-// Version pour la structure Plateau (utilisée par le Main)
-int coupValide(Plateau *p, Coup c);
-void jouerCoup(Plateau *p, Coup c);
-void changerJoueur(Plateau *p);
+// --- FONCTIONS DE L'IA (ia.c) ---
+int generer_coups_possibles(int plateau[8][8], int joueur, Coup liste_coups[64]);
+Coup choisir_meilleur_coup(int plateau[8][8], int ia, int humain, int profondeur);
+int minimax(int plateau[8][8], int depth, bool isMax, int ia, int humain);
+int evaluer_plateau(int plateau[8][8], int ia, int humain);
 
 #endif

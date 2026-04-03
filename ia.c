@@ -62,7 +62,7 @@ int minimax(int plateau[8][8], int depth, bool isMax, int ia, int humain) {
         for (int i = 0; i < nb_coups; i++) {
             int copie[8][8];
             copier_plateau(plateau, copie);
-            executer_coup(copie, coups[i].ligne, coups[i].colonne, ia);
+            jouer_coup(copie, coups[i].ligne, coups[i].colonne, ia);
             int score = minimax(copie, depth - 1, false, ia, humain);
             if (score > bestScore) bestScore = score;
         }
@@ -72,7 +72,7 @@ int minimax(int plateau[8][8], int depth, bool isMax, int ia, int humain) {
         for (int i = 0; i < nb_coups; i++) {
             int copie[8][8];
             copier_plateau(plateau, copie);
-            executer_coup(copie, coups[i].ligne, coups[i].colonne, humain);
+            jouer_coup(copie, coups[i].ligne, coups[i].colonne, humain);
             int score = minimax(copie, depth - 1, true, ia, humain);
             if (score < bestScore) bestScore = score;
         }
@@ -90,7 +90,7 @@ Coup choisir_meilleur_coup(int plateau[8][8], int ia, int humain, int profondeur
     for(int i=0; i<nb; i++) {
         int copie[8][8];
         copier_plateau(plateau, copie);
-        executer_coup(copie, coups[i].ligne, coups[i].colonne, ia);
+        jouer_coup(copie, coups[i].ligne, coups[i].colonne, ia);
         int s = minimax(copie, profondeur - 1, false, ia, humain);
         if(s > maxS) {
             maxS = s;
