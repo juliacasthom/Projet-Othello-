@@ -122,7 +122,81 @@ De même, un autre défi réside dans la complexité de l’algorithme \emph{Min
 
 Nous allons travailler ensemble sur la structure de base, puis nous répartirons les tâches pour la partie algorithmique. Les premières étapes seront de coder les règles du jeu et l'affichage simple, avant de passer au développement des intelligences artificielles et aux tests pour régler la difficulté du jeu.
 
-\section{\textbf{Intelligence Artificielle et Algorithmique}}
+\section{\textbf{Algorithmique et Intelligence Artificielle}}
+
+\subsection{Implémentation du mode Joueur contre Joueur}
+
+La première étape du projet a consisté à mettre en place une version fonctionnelle du jeu en mode \emph{joueur contre joueur}, sans intelligence artificielle. Cette étape a permis de valider l’ensemble des règles du jeu ainsi que la structure générale du programme.
+
+\subsubsection{Boucle principale de jeu}
+
+Le déroulement de la partie repose sur une boucle principale infinie qui simule l’alternance des tours entre les joueurs. À chaque itération, le programme :
+
+\begin{enumerate}
+    \item Affiche l’état actuel du plateau,
+    \item Demande au joueur courant de saisir un coup,
+    \item Vérifie la validité de ce coup,
+    \item Applique le coup et met à jour le plateau,
+    \item Change le joueur actif,
+    \item Vérifie si la partie est terminée.
+\end{enumerate}
+
+Si le coup saisi est invalide, le programme redemande simplement une nouvelle entrée sans changer de joueur.
+
+\subsubsection{Saisie des coups}
+
+Les coups sont saisis sous forme d’une coordonnée alphanumérique (par exemple \texttt{D3}). Une fonction dédiée convertit cette entrée en indices exploitables dans le tableau :
+
+\begin{itemize}
+    \item La lettre est transformée en indice de colonne,
+    \item Le chiffre est transformé en indice de ligne.
+\end{itemize}
+
+Ces coordonnées sont stockées dans une structure \texttt{Coup}, facilitant leur manipulation dans le programme.
+
+\subsubsection{Validation des coups}
+
+La fonction \texttt{coupValide} vérifie si un coup respecte les règles du jeu. Elle s’assure que :
+
+\begin{itemize}
+    \item La case visée est bien à l’intérieur du plateau,
+    \item La case est vide,
+    \item Au moins une capture est possible dans l’une des huit directions.
+\end{itemize}
+
+Pour cela, le programme parcourt les huit directions autour du coup grâce à un tableau de directions. La fonction \texttt{captureDirection} vérifie si un \emph{sandwich} est réalisable dans une direction donnée.
+
+\subsubsection{Gestion des captures}
+
+Lorsqu’un coup est valide, il est appliqué via la fonction \texttt{jouerCoup}. Celle-ci :
+
+\begin{itemize}
+    \item Place le pion du joueur courant sur le plateau,
+    \item Parcourt les huit directions,
+    \item Retourne les pions adverses capturés grâce à la fonction \texttt{retournerDirection}.
+\end{itemize}
+
+Cette dernière modifie directement les cases du plateau en remplaçant les pions adverses par ceux du joueur courant.
+
+\subsubsection{Mise à jour des scores}
+
+Après chaque coup, le programme recalcule le nombre de pions noirs et blancs présents sur le plateau en parcourant l’ensemble de la grille. Ces valeurs sont stockées dans la structure \texttt{Plateau} et utilisées pour déterminer le vainqueur en fin de partie.
+
+\subsubsection{Changement de joueur}
+
+Le changement de joueur est réalisé simplement en inversant la valeur du joueur courant (1 devient -1 et inversement). Cette approche permet une gestion efficace et compacte des tours.
+
+\subsubsection{Détection de fin de partie}
+
+Après chaque tour, le programme vérifie s’il reste au moins un coup valide possible. Pour cela, il teste toutes les cases du plateau. Si aucun coup n’est possible, la partie se termine et le programme affiche :
+
+\begin{itemize}
+    \item Le plateau final,
+    \item Le score des deux joueurs,
+    \item Le vainqueur ou un match nul.
+\end{itemize}
+
+Cette étape garantit que la partie respecte les conditions d’arrêt définies par les règles d’Othello.
 
 Le cœur de notre projet repose sur le développement d'une intelligence artificielle capable d'analyser le jeu et de prendre des décisions stratégiques. Nous avons implémenté l'algorithme \emph{Minimax} associé à une fonction d'évaluation multicritères.
 
