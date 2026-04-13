@@ -3,12 +3,22 @@
 
 #include <stdbool.h>
 
+// --- CONSTANTES ---
 #define SIZE 8
 #define VIDE 0
 #define NOIR 1
 #define BLANC -1
+#define INFINI 1000000
 
-// Structure pour le plateau
+// --- STRUCTURES ---
+
+// Structure pour représenter un coup sur la grille
+typedef struct {
+    int ligne;
+    int colonne;
+} Coup;
+
+// Structure regroupant l'état complet de la partie
 typedef struct {
     int cases[SIZE][SIZE]; 
     int joueurActuel; 
@@ -16,20 +26,35 @@ typedef struct {
     int scoreBlanc;
 } Plateau; 
 
-// Structure pour un coup
-typedef struct {
-    int ligne;
-    int colonne;
-} Coup;
+// --- MOTEUR DE JEU (moteur.c) ---
 
-// --- FONCTIONS DU MOTEUR DE JEU (moteur.c) ---
+// Vérifie si un sandwich est possible dans une direction donnée
+int captureDirection(int p[8][8], int r, int c, int dr, int dc, int joueur);
+
+// Vérifie si un coup est valide sur l'ensemble du plateau
 int est_coup_valide(int p[8][8], int r, int c, int joueur);
+
+// Applique un coup et retourne les pions capturés
 void jouer_coup(int p[8][8], int r, int c, int joueur);
 
-// --- FONCTIONS DE L'IA (ia.c) ---
-int generer_coups_possibles(int plateau[8][8], int joueur, Coup liste_coups[64]);
+
+// --- INTELLIGENCE ARTIFICIELLE (ia.c) ---
+
+// Fonctions de calcul de score (Heuristiques)
+int evaluer_plateau(int plateau[8][8], int pionIA, int pionHumain);
+int calculer_score_position(int plateau[8][8], int ia, int humain);
+int calculer_stabilite_bords(int plateau[8][8], int joueur);
+
+// Algorithmes de recherche
+int minimax(int plateau[8][8], int profondeur, bool estMax, int pionIA, int pionHumain);
+int alphabeta(int plateau[8][8], int profondeur, int alpha, int beta, bool estMax, int pionIA, int pionHumain);
+
+// Fonctions de sélection du meilleur coup
 Coup choisir_meilleur_coup(int plateau[8][8], int ia, int humain, int profondeur);
-int minimax(int plateau[8][8], int depth, bool isMax, int ia, int humain);
-int evaluer_plateau(int plateau[8][8], int ia, int humain);
+Coup choisir_meilleur_coup_alphabeta(int plateau[8][8], int pionIA, int pionHumain, int profondeurMax);
+
+// Utilitaires de simulation
+void copier_plateau(int source[8][8], int destination[8][8]);
+int generer_coups_possibles(int plateau[8][8], int joueur, Coup liste_coups[64]);
 
 #endif
