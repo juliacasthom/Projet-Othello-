@@ -1,6 +1,7 @@
 #include "include/raylib.h"
 #include "othello.h"
 #include <stdio.h>
+#include "moteur.h"
 
 #define SCREEN_WIDTH 600
 #define CELL_SIZE (SCREEN_WIDTH / 8) // 600/8 = 75 pixels par case

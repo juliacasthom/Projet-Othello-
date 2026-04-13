@@ -1,5 +1,6 @@
 #include "othello.h"
 #include <stdio.h>
+#include "moteur.h"
 
 // --- LOGIQUE PURE (Tableau 8x8) ---
 

@@ -1,4 +1,5 @@
 #include "othello.h"
+#include "moteur.h"
 
 int captureDirection(int p[8][8], int r, int c, int dx, int dy, int joueur) {
     int x = r + dx;
