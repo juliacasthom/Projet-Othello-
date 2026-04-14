@@ -38,17 +38,76 @@ int generer_coups_possibles(int plateau[8][8], int joueur, Coup liste_coups[64])
     return nb;
 }
 
-// Évaluation du plateau
-int evaluer_plateau(int plateau[8][8], int ia, int humain) {
-    int score = 0;
-    for(int i=0; i<8; i++) {
-        for(int j=0; j<8; j++) {
-            if(plateau[i][j] == ia) score += POIDS_IA[i][j];
-            else if(plateau[i][j] == humain) score -= POIDS_IA[i][j];
+/* Calcul stabilité:
+ Un pion est stable s'il ne peut plus jamais être retourné.
+ La stabilité se propage à partir des coins, le long des bords.*/
+int calculer_stabilite_bords(int plateau[8][8], int joueur) {
+    bool est_stable[8][8] = {false};
+    int nb_stables = 0;
+
+    int coins_x[4] = {0, 0, 7, 7};
+    int coins_y[4] = {0, 7, 0, 7};
+    int dir_x[4][2] = { {1, 0}, {1, 0}, {-1, 0}, {-1, 0} }; 
+    int dir_y[4][2] = { {0, 1}, {0, -1}, {0, 1}, {0, -1} };
+
+    for (int c = 0; c < 4; c++) {
+        int cx = coins_x[c], cy = coins_y[c];
+        if (plateau[cx][cy] == joueur) {
+            if (!est_stable[cx][cy]) { est_stable[cx][cy] = true; nb_stables++; }
+            for (int d = 0; d < 2; d++) {
+                int x = cx + dir_x[c][d], y = cy + dir_y[c][d];
+                while (x >= 0 && x < 8 && y >= 0 && y < 8 && plateau[x][y] == joueur) {
+                    if (!est_stable[x][y]) { est_stable[x][y] = true; nb_stables++; }
+                    x += dir_x[c][d]; y += dir_y[c][d];
+                }
+            }
         }
     }
-    return score;
+    return nb_stables;
 }
+
+// Évaluation du plateau
+int evaluer_plateau(int plateau[8][8], int ia, int humain) {
+    int score_position = 0;
+    int nb_ia = 0, nb_humain = 0, vides = 0;
+
+    // 1. Position
+    for(int i=0; i<8; i++) {
+        for(int j=0; j<8; j++) {
+            if(plateau[i][j] == ia) {
+                score_position += POIDS_IA[i][j];
+                nb_ia++;
+            } else if(plateau[i][j] == humain) {
+                score_position -= POIDS_IA[i][j];
+                nb_humain++;
+            } else {
+                vides++;
+            }
+        }
+    }
+
+    // 2. Mobilité (Nombre de coups disponibles)
+    Coup temp[64];
+    int mob_ia = generer_coups_possibles(plateau, ia, temp);
+    int mob_humain = generer_coups_possibles(plateau, humain, temp);
+
+    // 3. Stabilité
+    int stab_ia = calculer_stabilite_bords(plateau, ia);
+    int stab_humain = calculer_stabilite_bords(plateau, humain);
+
+    // Calcul final
+    int score_final = 0;
+    score_final += score_position * 10;           // Coef Position : 10
+    score_final += (mob_ia - mob_humain) * 50;    // Coef Mobilité : 50
+    score_final += (stab_ia - stab_humain) * 150; // Coef Stabilité : 150
+
+    // En fin de partie, le nombre de pions de l'abversaire rentre en compte
+    if (vides < 10) score_final += (nb_ia - nb_humain) * 100;
+    else score_final += (nb_ia - nb_humain) * 1;
+
+    return score_final;
+}
+
 
 // Algorithme Minimax
 int minimax(int plateau[8][8], int depth, bool isMax, int ia, int humain) {
@@ -56,31 +115,24 @@ int minimax(int plateau[8][8], int depth, bool isMax, int ia, int humain) {
     int joueur_actuel = isMax ? ia : humain;
     int nb_coups = generer_coups_possibles(plateau, joueur_actuel, coups);
 
-    if (depth == 0 || nb_coups == 0) {
-        return evaluer_plateau(plateau, ia, humain);
+    if (depth == 0) return evaluer_plateau(plateau, ia, humain);
+
+    if (nb_coups == 0) {
+        if (generer_coups_possibles(plateau, -joueur_actuel, coups) == 0)
+            return evaluer_plateau(plateau, ia, humain);
+        return minimax(plateau, depth - 1, !isMax, ia, humain);
     }
 
-    if (isMax) {
-        int bestScore = -1000000;
-        for (int i = 0; i < nb_coups; i++) {
-            int copie[8][8];
-            copier_plateau(plateau, copie);
-            jouer_coup(copie, coups[i].ligne, coups[i].colonne, ia);
-            int score = minimax(copie, depth - 1, false, ia, humain);
-            if (score > bestScore) bestScore = score;
-        }
-        return bestScore;
-    } else {
-        int bestScore = 1000000;
-        for (int i = 0; i < nb_coups; i++) {
-            int copie[8][8];
-            copier_plateau(plateau, copie);
-            jouer_coup(copie, coups[i].ligne, coups[i].colonne, humain);
-            int score = minimax(copie, depth - 1, true, ia, humain);
-            if (score < bestScore) bestScore = score;
-        }
-        return bestScore;
+    int bestScore = isMax ? -INFINI : INFINI;
+    for (int i = 0; i < nb_coups; i++) {
+        int copie[8][8];
+        copier_plateau(plateau, copie);
+        jouer_coup(copie, coups[i].ligne, coups[i].colonne, joueur_actuel);
+        int score = minimax(copie, depth - 1, !isMax, ia, humain);
+        if (isMax) { if (score > bestScore) bestScore = score; }
+        else { if (score < bestScore) bestScore = score; }
     }
+    return bestScore;
 }
 
 // Fonction appelée par le main pour choisir le meilleur coup
@@ -192,14 +244,4 @@ Coup choisir_meilleur_coup_alphabeta(int plateau[8][8], int pionIA, int pionHuma
         if (scoreDuCoup > alpha) alpha = scoreDuCoup;
     }
     return meilleurCoup;
-}
-
-int calculer_stabilite_bords(int plateau[8][8], int joueur) {
-    int nb = 0;
-    // On compte simplement les coins possédés pour l'instant
-    if (plateau[0][0] == joueur) nb++;
-    if (plateau[0][7] == joueur) nb++;
-    if (plateau[7][0] == joueur) nb++;
-    if (plateau[7][7] == joueur) nb++;
-    return nb;
 }

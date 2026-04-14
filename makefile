@@ -1,29 +1,47 @@
 # --- DETECTION DU SYSTEME ---
 ifeq ($(OS),Windows_NT)
-    # Configuration pour WINDOWS
+    # Windows (w64devkit)
     CC = gcc
-    OBJ = othello.exe
+    EXT = .exe
     CFLAGS = -Iinclude
-    LDFLAGS = -Llib -lraylib -lgdi32 -lwinmm -lopengl32
+    LDFLAGS = lib/libraylib.a -lgdi32 -lwinmm -lopengl32
     RM = rm -f
 else
-    # Configuration pour MACOS
+    # macOS
     CC = gcc
-    OBJ = othello
-    # On suppose que Raylib est installé via Homebrew sur Mac
+    EXT =
     CFLAGS = -I/opt/homebrew/include
     LDFLAGS = -L/opt/homebrew/lib -lraylib -framework CoreVideo -framework IOKit -framework Cocoa -framework OpenGL
     RM = rm -f
 endif
 
 # --- FICHIERS ---
-SRC = main.c moteur.c interface.c ia.c
+# Fichiers communs (utilisés par le jeu ET par les tests)
+COMMON = ia.c moteur.c
 
-# --- REGLES ---
-all: $(OBJ)
+# --- REGLES PRINCIPALES ---
 
-$(OBJ): $(SRC)
-	$(CC) $(SRC) $(CFLAGS) $(LDFLAGS) -o $(OBJ)
+# 1. Commande par défaut (compiler le jeu)
+all: othello$(EXT)
 
+# 2. Règle pour compiler le JEU (exclut tests.c)
+othello$(EXT): main.c $(COMMON)
+	$(CC) main.c $(COMMON) $(CFLAGS) $(LDFLAGS) -o othello$(EXT)
+
+# 3. Règle pour compiler les TESTS (exclut main.c)
+exec_tests$(EXT): tests.c $(COMMON)
+	$(CC) tests.c $(COMMON) $(CFLAGS) $(LDFLAGS) -o exec_tests$(EXT)
+
+# --- COMMANDES DE LANCEMENT ---
+
+# Pour lancer le jeu : taper "make run"
+run: othello$(EXT)
+	./othello$(EXT)
+
+# Pour lancer les tests : taper "make run-test"
+run-test: exec_tests$(EXT)
+	./exec_tests$(EXT)
+
+# Pour tout supprimer : taper "make clean"
 clean:
-	$(RM) $(OBJ)
+	$(RM) othello$(EXT) exec_tests$(EXT)
