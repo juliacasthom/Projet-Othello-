@@ -164,6 +164,25 @@ int main() {
 
             BeginDrawing();
             ClearBackground(WOOD_COLOR);
+            int col = souris.x / CELL_SIZE;
+            int lig = souris.y / CELL_SIZE;
+
+
+            if (lig >= 0 && lig < 8 && col >= 0 && col < 8) {
+                Color couleurCase = (p.joueurActuel == NOIR) ? DARK_PINK : LIGHT_PINK;
+                DrawRectangle(
+                    col * CELL_SIZE,
+                    lig * CELL_SIZE,
+                    CELL_SIZE,
+                    CELL_SIZE,
+                    Fade(couleurCase, 0.18f)
+                );
+                DrawRectangleLinesEx(
+                    (Rectangle){col*CELL_SIZE, lig*CELL_SIZE, CELL_SIZE, CELL_SIZE},
+                    2,
+                    couleurCase
+                );
+            }
             for (int i = 0; i < 8; i++) {
                 for (int j = 0; j < 8; j++) {
                     DrawRectangleLines(j*CELL_SIZE, i*CELL_SIZE, CELL_SIZE, CELL_SIZE, BORDER_COLOR);
