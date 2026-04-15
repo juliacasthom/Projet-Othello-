@@ -174,6 +174,30 @@ int main() {
                         DrawCircle(j*CELL_SIZE + CELL_SIZE/2, i*CELL_SIZE + CELL_SIZE/2, CELL_SIZE/2 - 6, LIGHT_PINK);
                         DrawCircleLines(j*CELL_SIZE + CELL_SIZE/2, i*CELL_SIZE + CELL_SIZE/2, CELL_SIZE/2 - 6, WHITE);
                     }
+                    else {
+                        // affichage coups possibles
+                        if (est_coup_valide(p.cases, i, j, p.joueurActuel)) {
+                            Color couleur = (p.joueurActuel == NOIR) ? DARK_PINK : LIGHT_PINK;
+                            Vector2 center = {
+                                j*CELL_SIZE + CELL_SIZE/2,
+                                i*CELL_SIZE + CELL_SIZE/2
+                            };
+                            float r = CELL_SIZE/2 - 6;
+
+                            //fond (plateau)
+                            DrawCircle(center.x, center.y, r, WOOD_COLOR);
+
+                            //contour + épais 
+                            for (int k = 0; k < 4; k++) {
+                                DrawCircleLines(
+                                    j*CELL_SIZE + CELL_SIZE/2,
+                                    i*CELL_SIZE + CELL_SIZE/2,
+                                    CELL_SIZE/2 - 6 + k*0.3f,
+                                    couleur
+                                );
+                            }
+                        }
+                    }
                 }
             }
 
