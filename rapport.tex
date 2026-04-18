@@ -206,6 +206,82 @@ Le cœur de notre projet repose sur le développement d'une intelligence artific
 
 Pour permettre à l'ordinateur d'anticiper les coups de son adversaire, nous avons développé l'algorithme \emph{Minimax}. Ce procédé fonctionne par récursion : l'IA simule ses propres coups (recherche du maximum) et les réponses optimales de l'adversaire (recherche du minimum) sur une profondeur de recherche définie.
 
+Explication du fonctionnement de l'algorithme étape par étape: 
+\begin{enumerate}
+\item Exploration: on part de l'état actuel et on simule tous les coups possibles de MAX.
+\item Simulation adverse : Pour chaque coup de MAX, on simule tous les coups possibles de MIN.
+\item Feuilles: Quand on arrive au bout (ex: depth=0), on utilise la Fonction d'Évaluation pour donner un score au plateau.
+\item Remontée:
+\begin{itemize}
+\item Si c'est au tour de MIN, il choisit le score le plus bas parmi ses enfants.
+\item Si c'est au tour de MAX, il choisit le score le plus haut parmi ses enfants.
+\end{itemize}
+\end{enumerate}
+Afin de ne pas altérer la partie en cours lors des simulations, le programme utilise des copies temporaires de la structure \texttt{Plateau}. À chaque étage de l'arbre de décision, l'IA génère la liste des coups possibles, applique le mouvement sur une copie de la grille, puis descend au niveau suivant. Une fois la profondeur maximale atteinte, la fonction d'évaluation est appelée pour attribuer un score au plateau final imaginé.
+\medskip
+Malgré la capacité de l'algorithme \textsc{Minimax} à prédire les prochains mouvements, le nombre de combinaisons possibles à Othello augmente de façon exponentielle en fonction de la profondeur de recherche. Afin d'améliorer ce processus et de donner à l'IA la possibilité de réfléchir plus loin dans le même intervalle de temps, nous avons mis en œuvre l'élagage Alpha-Béta.
+\subsection{L'élagage Alpha-Béta}
+Cet algorithme introduit deux bornes: 
+\begin{itemize}
+    \item Alpha $\alpha$ : Le meilleur score que MAX est assuré d'avoir jusqu'ici (initialisé à $-\infty$\ ).
+    \item Beta $\beta$ : Le meilleur score que MIN est assuré d'avoir jusqu'ici (initialisé à $+\infty$\ ).
+\end{itemize}
+Eplication de l'algorithme étape par étape: 
+\begin{enumerate}
+\item Transmission des bornes : À chaque appel récursif, on transmet les valeurs actuelles de $\alpha$ et $\beta$ aux nœuds enfants.
+\item Évaluation et Mise à jour :\begin{itemize}\item Le joueur \textsc{Max} met à jour $\alpha$ s'il trouve un coup offrant un meilleur score.
+\item Le joueur \textsc{Min} met à jour $\beta$ s'il trouve un coup qui réduit le score.
+\end{itemize}
+\item La Coupure : Si à un moment donné $\alpha \ge \beta$, cela signifie que le joueur précédent ne choisira jamais cette branche, car il dispose déjà d'une meilleure option ailleurs. On arrête alors immédiatement l'exploration de ce sous-arbre.
+\end{enumerate}
+Cette méthode permet de réduire considérablement le nombre de nœuds visités.
+
+
+\subsection{La fonction d'évaluation stratégique}
+
+La fonction d'évaluation est l'élément qui permet à l'IA de "juger" la qualité d'une position. À Othello, le simple nombre de pions est trompeur ; notre fonction utilise donc une combinaison de quatre critères stratégiques :
+
+\begin{itemize}
+    \item \textbf{La stabilité des bords :} Une fonction spécifique analyse les pions situés sur les bords du plateau. Si un pion est relié à un coin possédé, il est considéré comme stable (impossible à capturer), ce qui lui donne un poids prédominant dans le score.
+
+\begin{table}
+\centering
+\caption{Matrice de poids}
+\begin{tabular}{|c|c|c|c|c|c|c|c|}
+\hline
+\rowcolor{pink!20} \textbf{100} & -20 & 10 & 5 & 5 & 10 & -20 & \textbf{100} \\ \hline
+-20 & -50 & -2 & -2 & -2 & -2 & -50 & -20 \\ \hline
+10 & -2 & 5 & 1 & 1 & 5 & -2 & 10 \\ \hline
+5 & -2 & 1 & 0 & 0 & 1 & -2 & 5 \\ \hline
+5 & -2 & 1 & 0 & 0 & 1 & -2 & 5 \\ \hline
+10 & -2 & 5 & 1 & 1 & 5 & -2 & 10 \\ \hline
+-20 & -50 & -2 & -2 & -2 & -2 & -50 & -20 \\ \hline
+\rowcolor{pink!20} \textbf{100} & -20 & 10 & 5 & 5 & 10 & -20 & \textbf{100} \\ \hline
+\end{tabular}
+\end{table}
+
+    \item \textbf{La mobilité :} L'algorithme calcule la différence entre le nombre de coups possibles pour l'IA et pour l'adversaire. L'objectif est de restreindre les options de l'humain pour le forcer, à terme, à jouer des coups défavorables.
+    \item \textbf{Le positionnement (Matrice de poids) :} Nous utilisons une matrice constante qui attribue une valeur à chaque case. Les coins sont les cases les plus valorisées (+100), tandis que les cases adjacentes aux coins reçoivent un malus car elles risquent d'offrir l'accès aux coins à l'adversaire.
+    \item \textbf{Le matériel (Comptage des pions) :} Le nombre de pions est pris en compte, mais son importance est pondérée selon la phase de jeu. Il est secondaire en début de partie et devient le critère principal lors des derniers coups pour assurer la victoire finale.
+\end{itemize}
+
+\subsection{Logique de jeu et fonctions de support}
+
+Pour soutenir ces algorithmes, plusieurs fonctions essentielles ont été développées dans le moteur de jeu :
+\begin{itemize}
+    \item \textbf{Générateur de coups :} Cette fonction parcourt systématiquement le plateau pour lister toutes les cases vides respectant la règle du "sandwich" dans les huit directions possibles.
+    \item \textbf{Gestion des captures :} La fonction \texttt{jouer\_coup} assure la mise à jour du plateau en retournant tous les pions adverses emprisonnés lors d'un mouvement.
+    \item \textbf{Validation par tests unitaires :} L'ensemble de ces fonctions a été validé par une suite de tests unitaires indépendants, garantissant la fiabilité du calcul des scores et du respect des règles avant l'intégration finale.
+\end{itemize}
+
+\section{\textbf{Conclusion}}
+Ce travail nous a donné l'opportunité de créer et mettre au point un jeu d'Othello entier en langage C, alliant la programmation de bas niveau, l'organisation d'un logiciel et l'incorporation d'algorithmes d'intelligence artificielle. Nous avons initialement établi un moteur de jeu robuste qui respecte toutes les règles, suivi d'une structure modulaire qui facilite la clarté et l'évolution du programme.\medskip
+
+L'introduction d'une intelligence artificielle qui utilise l'algorithme Minimax, perfectionné par l'élagage Alpha-Bêta, nous a donné la possibilité d'explorer des concepts importants en algorithmique tels que la recherche dans les arbres de décision et l'amélioration des performances. La conception d’une fonction d'évaluation appropriée a permis de garantir un comportement stratégique fiable de l'intelligence artificielle.\medskip
+
+Enfin, ce projet nous a confrontés à plusieurs défis techniques, tels que le traitement des coups valides dans toutes les directions ou la complexité exponentielle des calculs associés à l'IA. Leur résolution nous a aidées à améliorer nos capacités en structuration de code, débogage et optimisation.
+
+\section{\textbf{Annexe}}
 \medskip
 \begin{algorithm}[H]
 \SetAlgoLined % Trace les lignes verticales
@@ -248,36 +324,6 @@ Pour permettre à l'ordinateur d'anticiper les coups de son adversaire, nous avo
 \caption{Algorithme Minimax}
 \end{algorithm}
 \medskip
-Explication du fonctionnement de l'algorithme étape par étape: 
-\begin{enumerate}
-\item Exploration: on part de l'état actuel et on simule tous les coups possibles de MAX.
-\item Simulation adverse : Pour chaque coup de MAX, on simule tous les coups possibles de MIN.
-\item Feuilles: Quand on arrive au bout (ex: depth=0), on utilise la Fonction d'Évaluation pour donner un score au plateau.
-\item Remontée:
-\begin{itemize}
-\item Si c'est au tour de MIN, il choisit le score le plus bas parmi ses enfants.
-\item Si c'est au tour de MAX, il choisit le score le plus haut parmi ses enfants.
-\end{itemize}
-\end{enumerate}
-Afin de ne pas altérer la partie en cours lors des simulations, le programme utilise des copies temporaires de la structure \texttt{Plateau}. À chaque étage de l'arbre de décision, l'IA génère la liste des coups possibles, applique le mouvement sur une copie de la grille, puis descend au niveau suivant. Une fois la profondeur maximale atteinte, la fonction d'évaluation est appelée pour attribuer un score au plateau final imaginé.
-\medskip
-Malgré la capacité de l'algorithme \textsc{Minimax} à prédire les prochains mouvements, le nombre de combinaisons possibles à Othello augmente de façon exponentielle en fonction de la profondeur de recherche. Afin d'améliorer ce processus et de donner à l'IA la possibilité de réfléchir plus loin dans le même intervalle de temps, nous avons mis en œuvre l'élagage Alpha-Béta.
-\subsection{L'élagage Alpha-Béta}
-Cet algorithme introduit deux bornes: 
-\begin{itemize}
-    \item Alpha $\alpha$ : Le meilleur score que MAX est assuré d'avoir jusqu'ici (initialisé à $-\infty$\ ).
-    \item Beta $\beta$ : Le meilleur score que MIN est assuré d'avoir jusqu'ici (initialisé à $+\infty$\ ).
-\end{itemize}
-Eplication de l'algorithme étape par étape: 
-\begin{enumerate}
-\item Transmission des bornes : À chaque appel récursif, on transmet les valeurs actuelles de $\alpha$ et $\beta$ aux nœuds enfants.
-\item Évaluation et Mise à jour :\begin{itemize}\item Le joueur \textsc{Max} met à jour $\alpha$ s'il trouve un coup offrant un meilleur score.
-\item Le joueur \textsc{Min} met à jour $\beta$ s'il trouve un coup qui réduit le score.
-\end{itemize}
-\item La Coupure : Si à un moment donné $\alpha \ge \beta$, cela signifie que le joueur précédent ne choisira jamais cette branche, car il dispose déjà d'une meilleure option ailleurs. On arrête alors immédiatement l'exploration de ce sous-arbre.
-\end{enumerate}
-Cette méthode permet de réduire considérablement le nombre de nœuds visités.
-
 \begin{algorithm}[H]
 \SetAlgoLined
 \DontPrintSemicolon
@@ -324,55 +370,7 @@ Cette méthode permet de réduire considérablement le nombre de nœuds visités
 }
 \caption{Algorithme Alpha-Béta}
 \end{algorithm}
-\subsection{La fonction d'évaluation stratégique}
 
-La fonction d'évaluation est l'élément qui permet à l'IA de "juger" la qualité d'une position. À Othello, le simple nombre de pions est trompeur ; notre fonction utilise donc une combinaison de quatre critères stratégiques :
 
-\begin{itemize}
-    \item \textbf{La stabilité des bords :} Une fonction spécifique analyse les pions situés sur les bords du plateau. Si un pion est relié à un coin possédé, il est considéré comme stable (impossible à capturer), ce qui lui donne un poids prédominant dans le score.
-
-\begin{table}
-\centering
-\caption{Matrice de poids}
-\begin{tabular}{|c|c|c|c|c|c|c|c|}
-\hline
-\rowcolor{pink!20} \textbf{100} & -20 & 10 & 5 & 5 & 10 & -20 & \textbf{100} \\ \hline
--20 & -50 & -2 & -2 & -2 & -2 & -50 & -20 \\ \hline
-10 & -2 & 5 & 1 & 1 & 5 & -2 & 10 \\ \hline
-5 & -2 & 1 & 0 & 0 & 1 & -2 & 5 \\ \hline
-5 & -2 & 1 & 0 & 0 & 1 & -2 & 5 \\ \hline
-10 & -2 & 5 & 1 & 1 & 5 & -2 & 10 \\ \hline
--20 & -50 & -2 & -2 & -2 & -2 & -50 & -20 \\ \hline
-\rowcolor{pink!20} \textbf{100} & -20 & 10 & 5 & 5 & 10 & -20 & \textbf{100} \\ \hline
-\end{tabular}
-\end{table}
-
-    \item \textbf{La mobilité :} L'algorithme calcule la différence entre le nombre de coups possibles pour l'IA et pour l'adversaire. L'objectif est de restreindre les options de l'humain pour le forcer, à terme, à jouer des coups défavorables.
-    \item \textbf{Le positionnement (Matrice de poids) :} Nous utilisons une matrice constante qui attribue une valeur à chaque case. Les coins sont les cases les plus valorisées (+100), tandis que les cases adjacentes aux coins reçoivent un malus car elles risquent d'offrir l'accès aux coins à l'adversaire.
-    \item \textbf{Le matériel (Comptage des pions) :} Le nombre de pions est pris en compte, mais son importance est pondérée selon la phase de jeu. Il est secondaire en début de partie et devient le critère principal lors des derniers coups pour assurer la victoire finale.
-\end{itemize}
-
-\subsection{Logique de jeu et fonctions de support}
-
-Pour soutenir ces algorithmes, plusieurs fonctions essentielles ont été développées dans le moteur de jeu :
-\begin{itemize}
-    \item \textbf{Générateur de coups :} Cette fonction parcourt systématiquement le plateau pour lister toutes les cases vides respectant la règle du "sandwich" dans les huit directions possibles.
-    \item \textbf{Gestion des captures :} La fonction \texttt{jouer\_coup} assure la mise à jour du plateau en retournant tous les pions adverses emprisonnés lors d'un mouvement.
-    \item \textbf{Validation par tests unitaires :} L'ensemble de ces fonctions a été validé par une suite de tests unitaires indépendants, garantissant la fiabilité du calcul des scores et du respect des règles avant l'intégration finale.
-\end{itemize}
 
 \end{document}\documentclass{article}
-\usepackage{graphicx} % Required for inserting images
-
-\title{rapport 1}
-\author{Julia Castellano}
-\date{April 2026}
-
-\begin{document}
-
-\maketitle
-
-\section{Introduction}
-
-\end{document}
-
