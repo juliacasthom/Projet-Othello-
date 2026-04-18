@@ -1,11 +1,12 @@
 #include "include/raylib.h"
 #include "othello.h"
 #include <stdio.h>
+#include <string.h>
 
 #define SCREEN_WIDTH 600
 #define CELL_SIZE (SCREEN_WIDTH / 8)
 
-typedef enum { SCREEN_ACCUEIL, SCREEN_JEU } GameScreen;
+typedef enum { SCREEN_ACCUEIL, SCREEN_SAISIE_NOMS, SCREEN_JEU } GameScreen;
 typedef enum { MODE_PVP, MODE_PVI } GameMode;
 
 Color WOOD_COLOR   = { 222, 184, 135, 255 };
@@ -44,15 +45,36 @@ int main() {
     Rectangle boutonPVP = { btnX, 340, btnW, btnH };
     Rectangle boutonPVI = { btnX, 420, btnW, btnH };
 
+    // --- Noms des joueurs ---
+    char nomJ1[32] = "";
+    char nomJ2[32] = "";
+    int  champActif = 0; // 0 = champ J1, 1 = champ J2
+
+    // Pop-up saisie noms (PVP)
+    Rectangle popupNoms     = { SCREEN_WIDTH/2 - 175, 160, 350, 300 };
+    Rectangle champNomJ1    = { popupNoms.x + 25, popupNoms.y + 90,  300, 40 };
+    Rectangle champNomJ2    = { popupNoms.x + 25, popupNoms.y + 185, 300, 40 };
+    Rectangle btnValiderNoms = { popupNoms.x + 75, popupNoms.y + 245, 200, 40 };
+
     // --- Variables pour le MENU POP-UP ---
     bool menuOuvert = false;
     Rectangle btnOuvrirMenu = { SCREEN_WIDTH - 110, SCREEN_WIDTH + 30, 90, 40 };
-    
+
+    // --- Bouton "?" pour afficher/masquer les coups possibles ---
+    bool afficherCoups = false;
+    Rectangle btnAideCoups = { SCREEN_WIDTH - 155, SCREEN_WIDTH + 30, 35, 40 };
+
     Rectangle popupFenetre = { SCREEN_WIDTH/2 - 125, 150, 250, 300 };
-    Rectangle btnRejouer   = { popupFenetre.x + 25, popupFenetre.y + 70, 200, 50 };
+    Rectangle btnRejouer   = { popupFenetre.x + 25, popupFenetre.y + 70,  200, 50 };
     Rectangle btnRetour    = { popupFenetre.x + 25, popupFenetre.y + 140, 200, 50 };
     Rectangle btnQuitter   = { popupFenetre.x + 25, popupFenetre.y + 210, 200, 50 };
-    Rectangle btnFermer    = { popupFenetre.x + 10, popupFenetre.y + 10, 30, 30 }; // Petite flèche
+    Rectangle btnFermer    = { popupFenetre.x + 10, popupFenetre.y + 10,  30,  30 };
+
+    // --- Pop-up confirmation quitter ---
+    bool confirmQuitterOuvert = false;
+    Rectangle popupConfirm  = { SCREEN_WIDTH/2 - 150, SCREEN_WIDTH/2 - 80, 300, 160 };
+    Rectangle btnConfirmOui = { popupConfirm.x + 20,  popupConfirm.y + 100, 110, 40 };
+    Rectangle btnConfirmNon = { popupConfirm.x + 170, popupConfirm.y + 100, 110, 40 };
 
     Plateau p;
     bool partieTerminee = false;
@@ -60,13 +82,27 @@ int main() {
     while (!WindowShouldClose()) {
         Vector2 souris = GetMousePosition();
 
+        // ============================
+        //  ECRAN ACCUEIL
+        // ============================
         if (ecran == SCREEN_ACCUEIL) {
             if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
                 if (CheckCollisionPointRec(souris, boutonPVP)) {
-                    mode = MODE_PVP; init_plateau(&p); partieTerminee = false; ecran = SCREEN_JEU;
+                    // On passe à la saisie des noms
+                    nomJ1[0] = '\0'; nomJ2[0] = '\0';
+                    champActif = 0;
+                    mode = MODE_PVP;
+                    ecran = SCREEN_SAISIE_NOMS;
                 }
                 if (CheckCollisionPointRec(souris, boutonPVI)) {
-                    mode = MODE_PVI; init_plateau(&p); partieTerminee = false; ecran = SCREEN_JEU;
+                    // Pas de saisie pour PVI
+                    strcpy(nomJ1, "Joueur");
+                    strcpy(nomJ2, "IA");
+                    mode = MODE_PVI;
+                    init_plateau(&p);
+                    partieTerminee = false;
+                    afficherCoups = false;
+                    ecran = SCREEN_JEU;
                 }
             }
 
@@ -103,9 +139,106 @@ int main() {
             DrawText("L3 Informatique - Projet Othello", SCREEN_WIDTH/2 - creditsW/2, 510, 18, BORDER_COLOR);
             EndDrawing();
         }
+
+        // ============================
+        //  ECRAN SAISIE NOMS (PVP)
+        // ============================
+        else if (ecran == SCREEN_SAISIE_NOMS) {
+
+            // Sélection du champ actif au clic
+            if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                if (CheckCollisionPointRec(souris, champNomJ1))  champActif = 0;
+                else if (CheckCollisionPointRec(souris, champNomJ2)) champActif = 1;
+
+                // Valider
+                if (CheckCollisionPointRec(souris, btnValiderNoms)) {
+                    // Noms par défaut si vides
+                    if (strlen(nomJ1) == 0) strcpy(nomJ1, "Joueur 1 ");
+                    if (strlen(nomJ2) == 0) strcpy(nomJ2, "Joueur 2 ");
+                    init_plateau(&p);
+                    partieTerminee = false;
+                    afficherCoups = false;
+                    ecran = SCREEN_JEU;
+                }
+            }
+
+            // Saisie clavier
+            int key = GetCharPressed();
+            while (key > 0) {
+                char *nom = (champActif == 0) ? nomJ1 : nomJ2;
+                int len = strlen(nom);
+                if (key >= 32 && key <= 125 && len < 20) {
+                    nom[len]   = (char)key;
+                    nom[len+1] = '\0';
+                }
+                key = GetCharPressed();
+            }
+            if (IsKeyPressed(KEY_BACKSPACE)) {
+                char *nom = (champActif == 0) ? nomJ1 : nomJ2;
+                int len = strlen(nom);
+                if (len > 0) nom[len-1] = '\0';
+            }
+            if (IsKeyPressed(KEY_TAB)) champActif = 1 - champActif;
+            if (IsKeyPressed(KEY_ENTER)) {
+                if (champActif == 0) champActif = 1;
+                else {
+                    if (strlen(nomJ1) == 0) strcpy(nomJ1, "Joueur 1 ");
+                    if (strlen(nomJ2) == 0) strcpy(nomJ2, "Joueur 2 ");
+                    init_plateau(&p);
+                    partieTerminee = false;
+                    afficherCoups = false;
+                    ecran = SCREEN_JEU;
+                }
+            }
+
+            BeginDrawing();
+            ClearBackground(WOOD_COLOR);
+
+            // Fond sombre derrière le popup
+            DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_WIDTH + 100, Fade(BLACK, 0.35f));
+
+            // Fenêtre popup
+            DrawRectangleRec(popupNoms, WOOD_COLOR);
+            DrawRectangleLinesEx(popupNoms, 3, BORDER_COLOR);
+
+            int titrePopW = MeasureText("Noms des joueurs", 26);
+            DrawText("Noms des joueurs", popupNoms.x + (popupNoms.width - titrePopW)/2, popupNoms.y + 20, 26, BORDER_COLOR);
+
+            // Champ Joueur 1
+            DrawText("Joueur Rose Foncé :", popupNoms.x + 25, champNomJ1.y - 22, 17, BORDER_COLOR);
+            DrawRectangleRec(champNomJ1, WHITE);
+            DrawRectangleLinesEx(champNomJ1, 2, (champActif == 0) ? DARK_PINK : BORDER_COLOR);
+            DrawText(nomJ1, champNomJ1.x + 8, champNomJ1.y + 10, 20, BORDER_COLOR);
+            // Curseur clignotant
+            if (champActif == 0 && ((int)(GetTime() * 2) % 2 == 0)) {
+                int cursorX = champNomJ1.x + 8 + MeasureText(nomJ1, 20);
+                DrawRectangle(cursorX, champNomJ1.y + 8, 2, 22, BORDER_COLOR);
+            }
+
+            // Champ Joueur 2
+            DrawText("Joueur Rose Pale :", popupNoms.x + 25, champNomJ2.y - 22, 17, BORDER_COLOR);
+            DrawRectangleRec(champNomJ2, WHITE);
+            DrawRectangleLinesEx(champNomJ2, 2, (champActif == 1) ? DARK_PINK : BORDER_COLOR);
+            DrawText(nomJ2, champNomJ2.x + 8, champNomJ2.y + 10, 20, BORDER_COLOR);
+            if (champActif == 1 && ((int)(GetTime() * 2) % 2 == 0)) {
+                int cursorX = champNomJ2.x + 8 + MeasureText(nomJ2, 20);
+                DrawRectangle(cursorX, champNomJ2.y + 8, 2, 22, BORDER_COLOR);
+            }
+
+            // Bouton Valider
+            bool survolValider = CheckCollisionPointRec(souris, btnValiderNoms);
+            DrawRectangleRec(btnValiderNoms, survolValider ? DARK_PINK : LIGHT_PINK);
+            DrawRectangleLinesEx(btnValiderNoms, 2, BORDER_COLOR);
+            DrawText("Jouer !", btnValiderNoms.x + btnValiderNoms.width/2 - MeasureText("Jouer !", 20)/2, btnValiderNoms.y + 10, 20, survolValider ? WHITE : BORDER_COLOR);
+
+            EndDrawing();
+        }
+
+        // ============================
+        //  ECRAN JEU
+        // ============================
         else {
-            // --- LOGIQUE ÉCRAN DE JEU ---
-            if (!menuOuvert) {
+            if (!menuOuvert && !confirmQuitterOuvert) {
                 int coupsPossibles = 0;
                 for (int i = 0; i < 8 && !coupsPossibles; i++)
                     for (int j = 0; j < 8; j++)
@@ -123,11 +256,13 @@ int main() {
                 }
 
                 if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-                    // Clic sur bouton MENU
                     if (CheckCollisionPointRec(souris, btnOuvrirMenu)) {
                         menuOuvert = true;
-                    } 
-                    // Clic sur le plateau
+                    }
+                    // Bouton "?" toggle coups possibles
+                    else if (CheckCollisionPointRec(souris, btnAideCoups)) {
+                        afficherCoups = !afficherCoups;
+                    }
                     else {
                         bool tourHumain = (mode == MODE_PVP) || (p.joueurActuel == NOIR);
                         if (!partieTerminee && tourHumain) {
@@ -141,7 +276,7 @@ int main() {
                         }
                     }
                 }
-                
+
                 // Logique IA
                 if (!partieTerminee && mode == MODE_PVI && p.joueurActuel == BLANC) {
                     Coup cIA = choisir_meilleur_coup_alphabeta(p.cases, BLANC, NOIR, 6);
@@ -151,14 +286,19 @@ int main() {
                     }
                     p.joueurActuel = NOIR;
                 }
-            } 
-            else { 
-                // --- LOGIQUE SI MENU OUVERT ---
+            }
+            else if (menuOuvert && !confirmQuitterOuvert) {
                 if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
                     if (CheckCollisionPointRec(souris, btnFermer))  menuOuvert = false;
-                    if (CheckCollisionPointRec(souris, btnRejouer)) { init_plateau(&p); partieTerminee = false; menuOuvert = false; }
+                    if (CheckCollisionPointRec(souris, btnRejouer)) { init_plateau(&p); partieTerminee = false; afficherCoups = false; menuOuvert = false; }
                     if (CheckCollisionPointRec(souris, btnRetour))  { ecran = SCREEN_ACCUEIL; menuOuvert = false; }
-                    if (CheckCollisionPointRec(souris, btnQuitter)) break;
+                    if (CheckCollisionPointRec(souris, btnQuitter)) { confirmQuitterOuvert = true; }
+                }
+            }
+            else if (confirmQuitterOuvert) {
+                if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                    if (CheckCollisionPointRec(souris, btnConfirmOui)) break;
+                    if (CheckCollisionPointRec(souris, btnConfirmNon)) { confirmQuitterOuvert = false; }
                 }
             }
 
@@ -167,22 +307,13 @@ int main() {
             int col = souris.x / CELL_SIZE;
             int lig = souris.y / CELL_SIZE;
 
-
+            // Surbrillance case survolée
             if (lig >= 0 && lig < 8 && col >= 0 && col < 8) {
                 Color couleurCase = (p.joueurActuel == NOIR) ? DARK_PINK : LIGHT_PINK;
-                DrawRectangle(
-                    col * CELL_SIZE,
-                    lig * CELL_SIZE,
-                    CELL_SIZE,
-                    CELL_SIZE,
-                    Fade(couleurCase, 0.18f)
-                );
-                DrawRectangleLinesEx(
-                    (Rectangle){col*CELL_SIZE, lig*CELL_SIZE, CELL_SIZE, CELL_SIZE},
-                    2,
-                    couleurCase
-                );
+                DrawRectangle(col * CELL_SIZE, lig * CELL_SIZE, CELL_SIZE, CELL_SIZE, Fade(couleurCase, 0.18f));
+                DrawRectangleLinesEx((Rectangle){col*CELL_SIZE, lig*CELL_SIZE, CELL_SIZE, CELL_SIZE}, 2, couleurCase);
             }
+
             for (int i = 0; i < 8; i++) {
                 for (int j = 0; j < 8; j++) {
                     DrawRectangleLines(j*CELL_SIZE, i*CELL_SIZE, CELL_SIZE, CELL_SIZE, BORDER_COLOR);
@@ -192,67 +323,94 @@ int main() {
                     } else if (p.cases[i][j] == BLANC) {
                         DrawCircle(j*CELL_SIZE + CELL_SIZE/2, i*CELL_SIZE + CELL_SIZE/2, CELL_SIZE/2 - 6, LIGHT_PINK);
                         DrawCircleLines(j*CELL_SIZE + CELL_SIZE/2, i*CELL_SIZE + CELL_SIZE/2, CELL_SIZE/2 - 6, WHITE);
-                    }
-                    else {
-                        // affichage coups possibles
-                        if (est_coup_valide(p.cases, i, j, p.joueurActuel)) {
+                    } else {
+                        // Coups possibles — seulement si activés par "?"
+                        if (afficherCoups && est_coup_valide(p.cases, i, j, p.joueurActuel)) {
                             Color couleur = (p.joueurActuel == NOIR) ? DARK_PINK : LIGHT_PINK;
-                            Vector2 center = {
-                                j*CELL_SIZE + CELL_SIZE/2,
-                                i*CELL_SIZE + CELL_SIZE/2
-                            };
-                            float r = CELL_SIZE/2 - 6;
-
-                            //fond (plateau)
-                            DrawCircle(center.x, center.y, r, WOOD_COLOR);
-
-                            //contour + épais 
-                            for (int k = 0; k < 4; k++) {
-                                DrawCircleLines(
-                                    j*CELL_SIZE + CELL_SIZE/2,
-                                    i*CELL_SIZE + CELL_SIZE/2,
-                                    CELL_SIZE/2 - 6 + k*0.3f,
-                                    couleur
-                                );
-                            }
+                            DrawCircle(j*CELL_SIZE + CELL_SIZE/2, i*CELL_SIZE + CELL_SIZE/2, CELL_SIZE/2 - 6, WOOD_COLOR);
+                            for (int k = 0; k < 4; k++)
+                                DrawCircleLines(j*CELL_SIZE + CELL_SIZE/2, i*CELL_SIZE + CELL_SIZE/2, CELL_SIZE/2 - 6 + k*0.3f, couleur);
                         }
                     }
                 }
             }
 
+            // Barre inférieure
             DrawRectangle(0, SCREEN_WIDTH, SCREEN_WIDTH, 100, BORDER_COLOR);
-            DrawText(TextFormat("ROSE FONCE: %d", p.scoreNoir), 20, SCREEN_WIDTH + 20, 25, DARK_PINK);
-            DrawText(TextFormat("ROSE PALE: %d", p.scoreBlanc), SCREEN_WIDTH-350, SCREEN_WIDTH + 20, 25, LIGHT_PINK);
 
-            // Bouton MENU à l'écran
+            // Scores — avec les noms des joueurs
+            DrawText(TextFormat("%s: %d", nomJ1, p.scoreNoir), 20, SCREEN_WIDTH + 20, 22, DARK_PINK);
+            DrawText("  ", 20 + MeasureText(TextFormat("%s: %d", nomJ1, p.scoreNoir), 22) + 10, SCREEN_WIDTH + 20, 22, WHITE);
+            DrawText(TextFormat("%s: %d", nomJ2, p.scoreBlanc), 20 + MeasureText(TextFormat("%s: %d", nomJ1, p.scoreNoir), 22) + 30, SCREEN_WIDTH + 20, 22, LIGHT_PINK);
+
+            // Bouton "?" (toggle coups possibles)
+            bool survolAide = CheckCollisionPointRec(souris, btnAideCoups);
+            DrawRectangleRec(btnAideCoups, afficherCoups ? DARK_PINK : (survolAide ? LIGHT_PINK : WOOD_COLOR));
+            DrawRectangleLinesEx(btnAideCoups, 2, WHITE);
+            DrawText("?", btnAideCoups.x + btnAideCoups.width/2 - MeasureText("?", 22)/2, btnAideCoups.y + 8, 22, afficherCoups ? WHITE : BORDER_COLOR);
+
+            // Bouton MENU
             bool survolBoutonMenu = CheckCollisionPointRec(souris, btnOuvrirMenu);
             DrawRectangleRec(btnOuvrirMenu, survolBoutonMenu ? DARK_PINK : LIGHT_PINK);
             DrawRectangleLinesEx(btnOuvrirMenu, 2, WHITE);
             DrawText("MENU", btnOuvrirMenu.x + 18, btnOuvrirMenu.y + 10, 20, BORDER_COLOR);
 
-            if (partieTerminee) DrawText("PARTIE TERMINEE", 180, SCREEN_WIDTH + 60, 20, GOLD);
-            else DrawText(TextFormat("Tour: %s", p.joueurActuel == NOIR ? "ROSE FONCE" : (mode == MODE_PVI ? "IA" : "ROSE PALE")), 20, SCREEN_WIDTH + 60, 20, WHITE);
+            // Tour / Fin de partie — avec noms
+            if (partieTerminee) {
+                DrawText("PARTIE TERMINEE", 155, SCREEN_WIDTH + 55, 20, GOLD);
+                const char *nomGagnant;
+                if (p.scoreNoir > p.scoreBlanc)
+                    nomGagnant = TextFormat("Vainqueur : %s !", nomJ1);
+                else if (p.scoreBlanc > p.scoreNoir)
+                    nomGagnant = TextFormat("Vainqueur : %s !", nomJ2);
+                else
+                    nomGagnant = "Egalite !";
+                int gagnantW = MeasureText(nomGagnant, 24);
+                DrawRectangle(0, SCREEN_WIDTH/2 - 22, SCREEN_WIDTH, 44, Fade(BLACK, 0.55f));
+                DrawText(nomGagnant, SCREEN_WIDTH/2 - gagnantW/2, SCREEN_WIDTH/2 - 12, 24, GOLD);
+            } else {
+                const char *nomTour = (p.joueurActuel == NOIR) ? nomJ1 : nomJ2;
+                DrawText(TextFormat("Tour : %s", nomTour), 20, SCREEN_WIDTH + 60, 20, WHITE);
+            }
 
-            // --- DESSIN DU POP-UP ---
+            // Pop-up MENU
             if (menuOuvert) {
-                DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_WIDTH + 100, Fade(BLACK, 0.4f)); // Fond sombre
+                DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_WIDTH + 100, Fade(BLACK, 0.4f));
                 DrawRectangleRec(popupFenetre, WOOD_COLOR);
                 DrawRectangleLinesEx(popupFenetre, 3, BORDER_COLOR);
                 DrawText("PAUSE", popupFenetre.x + 80, popupFenetre.y + 20, 30, BORDER_COLOR);
-                
-                // Bouton flèche retour
                 DrawText("<--", btnFermer.x, btnFermer.y, 25, BORDER_COLOR);
 
-                // Boutons du menu
-                Rectangle btns[] = {btnRejouer, btnRetour, btnQuitter};
+                Rectangle btns[]  = {btnRejouer, btnRetour, btnQuitter};
                 char *labels[] = {"Rejouer", "Menu Principal", "Quitter"};
-                for(int i=0; i<3; i++) {
+                for (int i = 0; i < 3; i++) {
                     bool h = CheckCollisionPointRec(souris, btns[i]);
                     DrawRectangleRec(btns[i], h ? DARK_PINK : LIGHT_PINK);
                     DrawRectangleLinesEx(btns[i], 2, BORDER_COLOR);
                     DrawText(labels[i], btns[i].x + btns[i].width/2 - MeasureText(labels[i], 20)/2, btns[i].y + 15, 20, BORDER_COLOR);
                 }
             }
+
+            // Pop-up CONFIRMATION QUITTER
+            if (confirmQuitterOuvert) {
+                DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_WIDTH + 100, Fade(BLACK, 0.55f));
+                DrawRectangleRec(popupConfirm, WOOD_COLOR);
+                DrawRectangleLinesEx(popupConfirm, 3, BORDER_COLOR);
+                const char *msgConfirm = "Sauvegarder avant de quitter ?";
+                int msgW = MeasureText(msgConfirm, 17);
+                DrawText(msgConfirm, popupConfirm.x + (popupConfirm.width - msgW)/2, popupConfirm.y + 35, 17, BORDER_COLOR);
+
+                bool survolOui = CheckCollisionPointRec(souris, btnConfirmOui);
+                DrawRectangleRec(btnConfirmOui, survolOui ? DARK_PINK : LIGHT_PINK);
+                DrawRectangleLinesEx(btnConfirmOui, 2, BORDER_COLOR);
+                DrawText("Oui", btnConfirmOui.x + btnConfirmOui.width/2 - MeasureText("Oui", 20)/2, btnConfirmOui.y + 10, 20, BORDER_COLOR);
+
+                bool survolNon = CheckCollisionPointRec(souris, btnConfirmNon);
+                DrawRectangleRec(btnConfirmNon, survolNon ? DARK_PINK : LIGHT_PINK);
+                DrawRectangleLinesEx(btnConfirmNon, 2, BORDER_COLOR);
+                DrawText("Non", btnConfirmNon.x + btnConfirmNon.width/2 - MeasureText("Non", 20)/2, btnConfirmNon.y + 10, 20, BORDER_COLOR);
+            }
+
             EndDrawing();
         }
     }
