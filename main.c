@@ -6,9 +6,6 @@
 #define SCREEN_WIDTH 600
 #define CELL_SIZE (SCREEN_WIDTH / 8)
 
-typedef enum { SCREEN_ACCUEIL, SCREEN_SAISIE_NOMS, SCREEN_JEU } GameScreen;
-typedef enum { MODE_PVP, MODE_PVI } GameMode;
-
 Color WOOD_COLOR   = { 222, 184, 135, 255 };
 Color DARK_PINK    = { 231, 84,  128, 255 };
 Color LIGHT_PINK   = { 255, 182, 193, 255 };
@@ -40,10 +37,15 @@ int main() {
     GameScreen ecran = SCREEN_ACCUEIL;
     GameMode   mode  = MODE_PVP;
 
+    // Vérifier si une sauvegarde existe au lancement
+    bool sauvegardeExiste = FileExists("save.bin");
+
     // Boutons accueil
     int btnW = 240, btnH = 55, btnX = SCREEN_WIDTH/2 - btnW/2;
-    Rectangle boutonPVP = { btnX, 340, btnW, btnH };
-    Rectangle boutonPVI = { btnX, 420, btnW, btnH };
+    // Initialisation des rectangles, qui seront mis à jour dans la boucle
+    Rectangle boutonContinuer = { btnX, 0, btnW, btnH }; 
+    Rectangle boutonPVP       = { btnX, 0, btnW, btnH };
+    Rectangle boutonPVI       = { btnX, 0, btnW, btnH };
 
     // --- Noms des joueurs ---
     char nomJ1[32] = "";
@@ -82,11 +84,31 @@ int main() {
     while (!WindowShouldClose()) {
         Vector2 souris = GetMousePosition();
 
+        bool sauvegardeExiste = FileExists("save.bin");
+
+        if (sauvegardeExiste) {
+            boutonContinuer.y = 320; 
+            boutonPVP.y       = 390; 
+            boutonPVI.y       = 460;
+        } else {
+            boutonPVP.y       = 340; 
+            boutonPVI.y       = 420;
+        }
+
         // ============================
         //  ECRAN ACCUEIL
         // ============================
         if (ecran == SCREEN_ACCUEIL) {
             if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                // LOGIQUE CONTINUER
+                if (sauvegardeExiste && CheckCollisionPointRec(souris, boutonContinuer)) {
+                    if (charger_partie(&p, &mode, nomJ1, nomJ2)) {
+                        ecran = SCREEN_JEU;
+                        partieTerminee = false;
+                        menuOuvert = false;
+                    }
+                }
+                // LOGIQUE PVP
                 if (CheckCollisionPointRec(souris, boutonPVP)) {
                     // On passe à la saisie des noms
                     nomJ1[0] = '\0'; nomJ2[0] = '\0';
@@ -108,12 +130,15 @@ int main() {
 
             BeginDrawing();
             ClearBackground(WOOD_COLOR);
+
+            // 1. Titre et Sous-titre
             int titreTaillle = 80;
             int titreW = MeasureText("OTHELLO", titreTaillle);
             DrawText("OTHELLO", SCREEN_WIDTH/2 - titreW/2, 70, titreTaillle, DARK_PINK);
             int sousTitreW = MeasureText("Rose Edition", 28);
             DrawText("Rose Edition", SCREEN_WIDTH/2 - sousTitreW/2, 158, 28, BORDER_COLOR);
 
+            // 2. Pions décoratifs
             int nbPions = 4, rayon = 28, espacement = 75;
             int totalPions = nbPions * espacement - (espacement - rayon*2);
             int startX = SCREEN_WIDTH/2 - totalPions/2 + rayon;
@@ -125,18 +150,30 @@ int main() {
                 DrawCircleLines(cx, 265, rayon, outline);
             }
 
+            // 3. Bouton CONTINUER
+            if (sauvegardeExiste) {
+                bool h = CheckCollisionPointRec(souris, boutonContinuer);
+                DrawRectangleRec(boutonContinuer, h ? DARK_PINK : LIGHT_PINK);
+                DrawRectangleLinesEx(boutonContinuer, 2, BORDER_COLOR);
+                DrawText("Continuer", boutonContinuer.x + 65, boutonContinuer.y + 15, 22, BORDER_COLOR);
+            }
+
+            // 4. Bouton PVP
             bool survolPVP = CheckCollisionPointRec(souris, boutonPVP);
             DrawRectangleRec(boutonPVP, survolPVP ? DARK_PINK : LIGHT_PINK);
             DrawRectangleLinesEx(boutonPVP, 2, BORDER_COLOR);
             DrawText("Joueur VS Joueur", boutonPVP.x + btnW/2 - MeasureText("Joueur VS Joueur", 22)/2, boutonPVP.y + btnH/2 - 11, 22, survolPVP ? WHITE : BORDER_COLOR);
 
+            // 5. Bouton PVI
             bool survolPVI = CheckCollisionPointRec(souris, boutonPVI);
             DrawRectangleRec(boutonPVI, survolPVI ? DARK_PINK : LIGHT_PINK);
             DrawRectangleLinesEx(boutonPVI, 2, BORDER_COLOR);
             DrawText("Joueur VS IA", boutonPVI.x + btnW/2 - MeasureText("Joueur VS IA", 22)/2, boutonPVI.y + btnH/2 - 11, 22, survolPVI ? WHITE : BORDER_COLOR);
 
+            // 6. Crédits
             int creditsW = MeasureText("L3 Informatique - Projet Othello", 18);
-            DrawText("L3 Informatique - Projet Othello", SCREEN_WIDTH/2 - creditsW/2, 510, 18, BORDER_COLOR);
+            DrawText("L3 Informatique - Projet Othello", SCREEN_WIDTH/2 - creditsW/2, 540, 18, BORDER_COLOR);
+            
             EndDrawing();
         }
 
@@ -252,7 +289,10 @@ int main() {
                         for (int j = 0; j < 8; j++)
                             if (est_coup_valide(p.cases, i, j, p.joueurActuel))
                                 { autrePeutJouer = 1; break; }
-                    if (!autrePeutJouer) partieTerminee = true;
+                    if (!autrePeutJouer) {
+                        partieTerminee = true;
+                        if (FileExists("save.bin")) remove("save.bin");
+                    }
                 }
 
                 if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
@@ -272,6 +312,7 @@ int main() {
                                 jouer_coup(p.cases, lig, col, p.joueurActuel);
                                 mettre_a_jour_scores(&p);
                                 p.joueurActuel = -p.joueurActuel;
+                                sauvegarder_partie(p, mode, nomJ1, nomJ2); 
                             }
                         }
                     }
@@ -285,6 +326,7 @@ int main() {
                         mettre_a_jour_scores(&p);
                     }
                     p.joueurActuel = NOIR;
+                    sauvegarder_partie(p, mode, nomJ1, nomJ2);
                 }
             }
             else if (menuOuvert && !confirmQuitterOuvert) {
@@ -297,8 +339,18 @@ int main() {
             }
             else if (confirmQuitterOuvert) {
                 if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-                    if (CheckCollisionPointRec(souris, btnConfirmOui)) break;
-                    if (CheckCollisionPointRec(souris, btnConfirmNon)) { confirmQuitterOuvert = false; }
+                    if (CheckCollisionPointRec(souris, btnConfirmOui)) {
+                        // 1. On sauvegarde l'état actuel
+                        sauvegarder_partie(p, mode, nomJ1, nomJ2);
+                        break; 
+                    }
+                    
+                    // Bouton NON
+                    if (CheckCollisionPointRec(souris, btnConfirmNon)) {
+                        // 1. On supprime le fichier pour ne pas reprendre cette partie plus tard
+                        if (FileExists("save.bin")) remove("save.bin");
+                        break; 
+                    }
                 }
             }
 

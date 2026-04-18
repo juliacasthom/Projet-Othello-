@@ -1,4 +1,7 @@
 #include "othello.h"
+#include <string.h>
+#include <stdio.h>
+#include <stddef.h>
 
 int captureDirection(int p[8][8], int r, int c, int dx, int dy, int joueur) {
     int x = r + dx;
@@ -45,4 +48,34 @@ void calculer_scores(Plateau *p) {
             if(p->cases[i][j] == NOIR) p->scoreNoir++;
             else if(p->cases[i][j] == BLANC) p->scoreBlanc++;
         }
+}
+
+
+void sauvegarder_partie(Plateau p, GameMode m, const char* n1, const char* n2) {
+    Sauvegarde s;
+    s.plateau = p;
+    s.mode = m;
+    strcpy(s.nomJ1, n1);
+    strcpy(s.nomJ2, n2);
+
+    FILE *f = fopen("save.bin", "wb"); // !!! wb = write binary
+    if (f != NULL) {
+        fwrite(&s, sizeof(Sauvegarde), 1, f);
+        fclose(f);
+    }
+}
+
+bool charger_partie(Plateau *p, GameMode *m, char* n1, char* n2) {
+    Sauvegarde s;
+    FILE *f = fopen("save.bin", "rb"); // !!! rb = read binary
+    if (f == NULL) return false;
+
+    fread(&s, sizeof(Sauvegarde), 1, f);
+    fclose(f);
+
+    *p = s.plateau;
+    *m = s.mode;
+    strcpy(n1, s.nomJ1);
+    strcpy(n2, s.nomJ2);
+    return true;
 }
