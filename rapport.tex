@@ -148,17 +148,31 @@ Comme l'ordinateur ne peut pas prévoir tous les coups jusqu'à la fin de la par
 
 Pour le mode \emph{solo}, nous utiliserons l'algorithme \emph{A*}. Il servira à résoudre des situations précises en cherchant le chemin le plus court pour atteindre un objectif, par exemple pour gagner avec le plus petit nombre de coups possible.
 
-\section{\textbf{Complexité}}
+\section{\textbf{Analyse de la complexité}}
 
-La plupart des fonctions qui gèrent le jeu Othello, comme vérifier si un coup est valide, jouer un coup ou générer les coups possibles, ont une complexité constante en $O(1)$. Cela vient du fait que le plateau fait toujours $8 \times 8$, donc le nombre d’opérations reste limité et ne dépend pas d’une taille variable.
+La plupart des fonctions qui gèrent le jeu Othello, comme vérifier si un coup est valide, jouer un coup ou générer les coups possibles, ont une complexité temporelle constante en $O(1)$. Cela vient du fait que le plateau fait toujours $8 \times 8$, donc le nombre d’opérations reste limité et ne dépend pas d’une taille variable.
 
-En revanche, les fonctions liées à l’intelligence artificielle sont beaucoup plus coûteuses. Les algorithmes comme \emph{Minimax} explorent un arbre de jeu en testant plusieurs coups possibles à chaque étape. Cette complexité dépend de deux paramètres : $b$ et $d$.
+En revanche, les fonctions liées à l’intelligence artificielle sont beaucoup plus coûteuses. Les algorithmes comme \emph{Minimax} explorent un arbre de jeu en testant plusieurs coups possibles à chaque étape. Cette complexité dépend de deux paramètres : $b$ et $d$. Le paramètre $b$ correspond au nombre moyen de coups possibles à un moment donné (le facteur de branchement), et $d$ est la profondeur de recherche, c’est-à-dire le nombre de coups que l’IA anticipe. Dans notre cas, cette profondeur est fixée à $d = 5$.
 
-Le paramètre $b$ correspond au nombre moyen de coups possibles à un moment donné (le facteur de branchement), et $d$ est la profondeur de recherche, c’est-à-dire le nombre de coups que l’IA anticipe.
+\subsection*{Complexité de Minimax}
 
-La complexité de Minimax est donc en $O(b^d)$, ce qui signifie que le nombre de positions analysées augmente très rapidement avec la profondeur.
+La complexité temporelle de \emph{Minimax} est :
 
-L’algorithme Alpha-Bêta améliore cela en évitant d’explorer certaines branches inutiles, ce qui réduit le temps de calcul. Dans le meilleur des cas, on peut descendre vers $O(b^{d/2})$, même si dans le pire cas cela reste exponentiel.
+\begin{itemize}
+    \item \textbf{Pire cas :} $O(b^d)$, lorsque tous les nœuds de l’arbre doivent être explorés sans aucune optimisation.
+    \item \textbf{Cas moyen :} $O(b^d)$ également, car en pratique sans optimisation, la croissance reste exponentielle et proche du pire cas.
+    \item \textbf{Meilleur cas :} $O(b^d)$, car sans élagage, Minimax explore systématiquement toutes les branches possibles.
+\end{itemize}
+
+\subsection*{Complexité de l’algorithme Alpha-Bêta}
+
+L’algorithme \emph{Alpha-Bêta} améliore Minimax en supprimant les branches inutiles grâce aux bornes $\alpha$ et $\beta$ :
+
+\begin{itemize}
+    \item \textbf{Pire cas :} $O(b^d)$, lorsque aucun élagage n’est possible (ordre des coups défavorable).
+    \item \textbf{Cas moyen :} environ $O(b^{\frac{3d}{4}})$, grâce à un élagage partiel dans la plupart des situations.
+    \item \textbf{Meilleur cas :} $O(b^{\frac{d}{2}})$, lorsque les meilleurs coups sont explorés en premier, permettant un élagage maximal.
+\end{itemize}
 
 Au final, ce sont surtout ces algorithmes d’IA qui déterminent les performances du programme, alors que les autres opérations sur le plateau restent très rapides.
 
