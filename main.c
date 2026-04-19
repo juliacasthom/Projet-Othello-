@@ -42,20 +42,21 @@ int main() {
 
     // Boutons accueil
     int btnW = 240, btnH = 55, btnX = SCREEN_WIDTH/2 - btnW/2;
+
     // Initialisation des rectangles, qui seront mis à jour dans la boucle
-    Rectangle boutonContinuer = { btnX, 0, btnW, btnH }; 
+    Rectangle boutonContinuer = { btnX, 0, btnW, btnH };
     Rectangle boutonPVP       = { btnX, 0, btnW, btnH };
     Rectangle boutonPVI       = { btnX, 0, btnW, btnH };
 
     // --- Noms des joueurs ---
     char nomJ1[32] = "";
     char nomJ2[32] = "";
-    int  champActif = 0; // 0 = champ J1, 1 = champ J2
+    int  champActif = 0;
 
     // Pop-up saisie noms (PVP)
-    Rectangle popupNoms     = { SCREEN_WIDTH/2 - 175, 160, 350, 300 };
-    Rectangle champNomJ1    = { popupNoms.x + 25, popupNoms.y + 90,  300, 40 };
-    Rectangle champNomJ2    = { popupNoms.x + 25, popupNoms.y + 185, 300, 40 };
+    Rectangle popupNoms      = { SCREEN_WIDTH/2 - 175, 160, 350, 300 };
+    Rectangle champNomJ1     = { popupNoms.x + 25, popupNoms.y + 90,  300, 40 };
+    Rectangle champNomJ2     = { popupNoms.x + 25, popupNoms.y + 185, 300, 40 };
     Rectangle btnValiderNoms = { popupNoms.x + 75, popupNoms.y + 245, 200, 40 };
 
     // --- Variables pour le MENU POP-UP ---
@@ -78,6 +79,11 @@ int main() {
     Rectangle btnConfirmOui = { popupConfirm.x + 20,  popupConfirm.y + 100, 110, 40 };
     Rectangle btnConfirmNon = { popupConfirm.x + 170, popupConfirm.y + 100, 110, 40 };
 
+    bool reglesOuvertes = false;
+    Rectangle btnRegles       = { SCREEN_WIDTH/2 - 75, 600, 150, 20 };
+    Rectangle popupRegles     = { 30, 60, SCREEN_WIDTH - 60, 565 };
+    Rectangle btnFermerRegles = { popupRegles.x + 10, popupRegles.y + 15, 50, 25 };
+
     Plateau p;
     bool partieTerminee = false;
 
@@ -87,12 +93,12 @@ int main() {
         bool sauvegardeExiste = FileExists("save.bin");
 
         if (sauvegardeExiste) {
-            boutonContinuer.y = 320; 
-            boutonPVP.y       = 390; 
+            boutonContinuer.y = 320;
+            boutonPVP.y       = 390;
             boutonPVI.y       = 460;
         } else {
-            boutonPVP.y       = 340; 
-            boutonPVI.y       = 420;
+            boutonPVP.y = 340;
+            boutonPVI.y = 420;
         }
 
         // ============================
@@ -100,31 +106,35 @@ int main() {
         // ============================
         if (ecran == SCREEN_ACCUEIL) {
             if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-                // LOGIQUE CONTINUER
-                if (sauvegardeExiste && CheckCollisionPointRec(souris, boutonContinuer)) {
-                    if (charger_partie(&p, &mode, nomJ1, nomJ2)) {
-                        ecran = SCREEN_JEU;
-                        partieTerminee = false;
-                        menuOuvert = false;
+                if (reglesOuvertes) {
+                    if (CheckCollisionPointRec(souris, btnFermerRegles))
+                        reglesOuvertes = false;
+                } else {
+                    if (CheckCollisionPointRec(souris, btnRegles)) {
+                        reglesOuvertes = true;
                     }
-                }
-                // LOGIQUE PVP
-                if (CheckCollisionPointRec(souris, boutonPVP)) {
-                    // On passe à la saisie des noms
-                    nomJ1[0] = '\0'; nomJ2[0] = '\0';
-                    champActif = 0;
-                    mode = MODE_PVP;
-                    ecran = SCREEN_SAISIE_NOMS;
-                }
-                if (CheckCollisionPointRec(souris, boutonPVI)) {
-                    // Pas de saisie pour PVI
-                    strcpy(nomJ1, "Joueur");
-                    strcpy(nomJ2, "IA");
-                    mode = MODE_PVI;
-                    init_plateau(&p);
-                    partieTerminee = false;
-                    afficherCoups = false;
-                    ecran = SCREEN_JEU;
+                    if (sauvegardeExiste && CheckCollisionPointRec(souris, boutonContinuer)) {
+                        if (charger_partie(&p, &mode, nomJ1, nomJ2)) {
+                            ecran = SCREEN_JEU;
+                            partieTerminee = false;
+                            menuOuvert = false;
+                        }
+                    }
+                    if (CheckCollisionPointRec(souris, boutonPVP)) {
+                        nomJ1[0] = '\0'; nomJ2[0] = '\0';
+                        champActif = 0;
+                        mode = MODE_PVP;
+                        ecran = SCREEN_SAISIE_NOMS;
+                    }
+                    if (CheckCollisionPointRec(souris, boutonPVI)) {
+                        strcpy(nomJ1, "Joueur");
+                        strcpy(nomJ2, "IA");
+                        mode = MODE_PVI;
+                        init_plateau(&p);
+                        partieTerminee = false;
+                        afficherCoups = false;
+                        ecran = SCREEN_JEU;
+                    }
                 }
             }
 
@@ -144,8 +154,8 @@ int main() {
             int startX = SCREEN_WIDTH/2 - totalPions/2 + rayon;
             for (int k = 0; k < nbPions; k++) {
                 int cx = startX + k * espacement;
-                Color c = (k % 2 == 0) ? DARK_PINK : LIGHT_PINK;
-                Color outline = (k % 2 == 0) ? BLACK : WHITE;
+                Color c       = (k % 2 == 0) ? DARK_PINK  : LIGHT_PINK;
+                Color outline = (k % 2 == 0) ? BLACK       : WHITE;
                 DrawCircle(cx, 265, rayon, c);
                 DrawCircleLines(cx, 265, rayon, outline);
             }
@@ -157,23 +167,82 @@ int main() {
                 DrawRectangleLinesEx(boutonContinuer, 2, BORDER_COLOR);
                 DrawText("Continuer", boutonContinuer.x + 65, boutonContinuer.y + 15, 22, BORDER_COLOR);
             }
-
             // 4. Bouton PVP
             bool survolPVP = CheckCollisionPointRec(souris, boutonPVP);
             DrawRectangleRec(boutonPVP, survolPVP ? DARK_PINK : LIGHT_PINK);
             DrawRectangleLinesEx(boutonPVP, 2, BORDER_COLOR);
-            DrawText("Joueur VS Joueur", boutonPVP.x + btnW/2 - MeasureText("Joueur VS Joueur", 22)/2, boutonPVP.y + btnH/2 - 11, 22, survolPVP ? WHITE : BORDER_COLOR);
+            DrawText("Joueur VS Joueur",
+                boutonPVP.x + btnW/2 - MeasureText("Joueur VS Joueur", 22)/2,
+                boutonPVP.y + btnH/2 - 11, 22, survolPVP ? WHITE : BORDER_COLOR);
 
             // 5. Bouton PVI
             bool survolPVI = CheckCollisionPointRec(souris, boutonPVI);
             DrawRectangleRec(boutonPVI, survolPVI ? DARK_PINK : LIGHT_PINK);
             DrawRectangleLinesEx(boutonPVI, 2, BORDER_COLOR);
-            DrawText("Joueur VS IA", boutonPVI.x + btnW/2 - MeasureText("Joueur VS IA", 22)/2, boutonPVI.y + btnH/2 - 11, 22, survolPVI ? WHITE : BORDER_COLOR);
+            DrawText("Joueur VS IA",
+                boutonPVI.x + btnW/2 - MeasureText("Joueur VS IA", 22)/2,
+                boutonPVI.y + btnH/2 - 11, 22, survolPVI ? WHITE : BORDER_COLOR);
 
             // 6. Crédits
             int creditsW = MeasureText("L3 Informatique - Projet Othello", 18);
-            DrawText("L3 Informatique - Projet Othello", SCREEN_WIDTH/2 - creditsW/2, 540, 18, BORDER_COLOR);
-            
+            DrawText("L3 Informatique - Projet Othello",
+                SCREEN_WIDTH/2 - creditsW/2, 540, 18, BORDER_COLOR);
+
+            // Texte cliquable Règles
+            bool survolRegles = !reglesOuvertes && CheckCollisionPointRec(souris, btnRegles);
+            int rTxtW = MeasureText("Voir les règles du jeu", 18);
+            DrawText("Voir les règles du jeu",
+                SCREEN_WIDTH/2 - rTxtW/2, 600, 18,
+                survolRegles ? DARK_PINK : BORDER_COLOR);
+            if (survolRegles)
+                DrawLine(SCREEN_WIDTH/2 - rTxtW/2, 620,
+                         SCREEN_WIDTH/2 - rTxtW/2 + rTxtW, 620, DARK_PINK);
+
+            // Pop-up Règles
+            if (reglesOuvertes) {
+                DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_WIDTH + 100, Fade(BLACK, 0.45f));
+                DrawRectangleRec(popupRegles, WOOD_COLOR);
+                DrawRectangleLinesEx(popupRegles, 3, BORDER_COLOR);
+
+                int rTitreW = MeasureText("Règles du jeu", 28);
+                DrawText("Règles du jeu",
+                    popupRegles.x + (popupRegles.width - rTitreW)/2,
+                    popupRegles.y + 18, 28, DARK_PINK);
+
+                DrawText("<--", popupRegles.x + 10, popupRegles.y + 15, 22, BORDER_COLOR);
+
+                int py = popupRegles.y + 65;
+                int px = popupRegles.x + 20;
+                int fs = 15;
+                int ft = 17;
+                int li = 22;
+
+                DrawText("But du jeu", px, py, ft, BORDER_COLOR); py += li + 4;
+                DrawText("  Avoir le plus de pions de sa couleur en fin de partie.", px, py, fs, DARK_PINK); py += li + 8;
+
+                DrawText("Nombre de joueurs", px, py, ft, BORDER_COLOR); py += li + 4;
+                DrawText("  1 a 2 joueurs", px, py, fs, DARK_PINK); py += li + 8;
+
+                DrawText("Mise en place", px, py, ft, BORDER_COLOR); py += li + 4;
+                DrawText("  4 pions au centre : 2 rose fonce et 2 rose pale en diagonale.", px, py, fs, DARK_PINK); py += li;
+                DrawText("  Rose foncé commence toujours.", px, py, fs, DARK_PINK); py += li + 8;
+
+                DrawText("Tour de jeu", px, py, ft, BORDER_COLOR); py += li + 4;
+                DrawText("  1. Poser un pion qui encadre au moins un pion adverse", px, py, fs, DARK_PINK); py += li;
+                DrawText("     (sandwich horizontal, vertical ou diagonal).", px, py, fs, DARK_PINK); py += li;
+                DrawText("  2. Les pions adverses encadres deviennent ta couleur.", px, py, fs, DARK_PINK); py += li + 8;
+
+                DrawText("Coup obligatoire", px, py, ft, BORDER_COLOR); py += li + 4;
+                DrawText("  Si tu peux jouer, tu dois jouer.", px, py, fs, DARK_PINK); py += li;
+                DrawText("  Si tu ne peux pas jouer, tu passes ton tour.", px, py, fs, DARK_PINK); py += li + 8;
+
+                DrawText("Fin de partie", px, py, ft, BORDER_COLOR); py += li + 4;
+                DrawText("  Le plateau est rempli OU aucun joueur ne peut jouer.", px, py, fs, DARK_PINK); py += li + 8;
+
+                DrawText("Gagnant", px, py, ft, BORDER_COLOR); py += li + 4;
+                DrawText("  Le joueur avec le plus grand nombre de pions l'emporte.", px, py, fs, DARK_PINK);
+            }
+
             EndDrawing();
         }
 
@@ -184,8 +253,8 @@ int main() {
 
             // Sélection du champ actif au clic
             if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-                if (CheckCollisionPointRec(souris, champNomJ1))  champActif = 0;
-                else if (CheckCollisionPointRec(souris, champNomJ2)) champActif = 1;
+                if (CheckCollisionPointRec(souris, champNomJ1))       champActif = 0;
+                else if (CheckCollisionPointRec(souris, champNomJ2))  champActif = 1;
 
                 // Valider
                 if (CheckCollisionPointRec(souris, btnValiderNoms)) {
@@ -210,6 +279,7 @@ int main() {
                 }
                 key = GetCharPressed();
             }
+
             if (IsKeyPressed(KEY_BACKSPACE)) {
                 char *nom = (champActif == 0) ? nomJ1 : nomJ2;
                 int len = strlen(nom);
@@ -239,7 +309,9 @@ int main() {
             DrawRectangleLinesEx(popupNoms, 3, BORDER_COLOR);
 
             int titrePopW = MeasureText("Noms des joueurs", 26);
-            DrawText("Noms des joueurs", popupNoms.x + (popupNoms.width - titrePopW)/2, popupNoms.y + 20, 26, BORDER_COLOR);
+            DrawText("Noms des joueurs",
+                popupNoms.x + (popupNoms.width - titrePopW)/2,
+                popupNoms.y + 20, 26, BORDER_COLOR);
 
             // Champ Joueur 1
             DrawText("Joueur Rose Foncé :", popupNoms.x + 25, champNomJ1.y - 22, 17, BORDER_COLOR);
@@ -266,7 +338,9 @@ int main() {
             bool survolValider = CheckCollisionPointRec(souris, btnValiderNoms);
             DrawRectangleRec(btnValiderNoms, survolValider ? DARK_PINK : LIGHT_PINK);
             DrawRectangleLinesEx(btnValiderNoms, 2, BORDER_COLOR);
-            DrawText("Jouer !", btnValiderNoms.x + btnValiderNoms.width/2 - MeasureText("Jouer !", 20)/2, btnValiderNoms.y + 10, 20, survolValider ? WHITE : BORDER_COLOR);
+            DrawText("Jouer !",
+                btnValiderNoms.x + btnValiderNoms.width/2 - MeasureText("Jouer !", 20)/2,
+                btnValiderNoms.y + 10, 20, survolValider ? WHITE : BORDER_COLOR);
 
             EndDrawing();
         }
@@ -298,12 +372,11 @@ int main() {
                 if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
                     if (CheckCollisionPointRec(souris, btnOuvrirMenu)) {
                         menuOuvert = true;
-                    }
+                    } 
                     // Bouton "?" toggle coups possibles
                     else if (CheckCollisionPointRec(souris, btnAideCoups)) {
                         afficherCoups = !afficherCoups;
-                    }
-                    else {
+                    } else {
                         bool tourHumain = (mode == MODE_PVP) || (p.joueurActuel == NOIR);
                         if (!partieTerminee && tourHumain) {
                             int col = souris.x / CELL_SIZE;
@@ -312,7 +385,7 @@ int main() {
                                 jouer_coup(p.cases, lig, col, p.joueurActuel);
                                 mettre_a_jour_scores(&p);
                                 p.joueurActuel = -p.joueurActuel;
-                                sauvegarder_partie(p, mode, nomJ1, nomJ2); 
+                                sauvegarder_partie(p, mode, nomJ1, nomJ2);
                             }
                         }
                     }
@@ -328,34 +401,38 @@ int main() {
                     p.joueurActuel = NOIR;
                     sauvegarder_partie(p, mode, nomJ1, nomJ2);
                 }
-            }
-            else if (menuOuvert && !confirmQuitterOuvert) {
+            } else if (menuOuvert && !confirmQuitterOuvert) {
                 if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
                     if (CheckCollisionPointRec(souris, btnFermer))  menuOuvert = false;
-                    if (CheckCollisionPointRec(souris, btnRejouer)) { init_plateau(&p); partieTerminee = false; afficherCoups = false; menuOuvert = false; }
+                    if (CheckCollisionPointRec(souris, btnRejouer)) {
+                        init_plateau(&p);
+                        partieTerminee = false;
+                        afficherCoups = false;
+                        menuOuvert = false;
+                    }
                     if (CheckCollisionPointRec(souris, btnRetour))  { ecran = SCREEN_ACCUEIL; menuOuvert = false; }
                     if (CheckCollisionPointRec(souris, btnQuitter)) { confirmQuitterOuvert = true; }
                 }
-            }
-            else if (confirmQuitterOuvert) {
+            } else if (confirmQuitterOuvert) {
                 if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
                     if (CheckCollisionPointRec(souris, btnConfirmOui)) {
                         // 1. On sauvegarde l'état actuel
                         sauvegarder_partie(p, mode, nomJ1, nomJ2);
-                        break; 
+                        break;
                     }
-                    
+
                     // Bouton NON
                     if (CheckCollisionPointRec(souris, btnConfirmNon)) {
                         // 1. On supprime le fichier pour ne pas reprendre cette partie plus tard
                         if (FileExists("save.bin")) remove("save.bin");
-                        break; 
+                        break;
                     }
                 }
             }
 
             BeginDrawing();
             ClearBackground(WOOD_COLOR);
+
             int col = souris.x / CELL_SIZE;
             int lig = souris.y / CELL_SIZE;
 
@@ -363,7 +440,7 @@ int main() {
             if (lig >= 0 && lig < 8 && col >= 0 && col < 8) {
                 Color couleurCase = (p.joueurActuel == NOIR) ? DARK_PINK : LIGHT_PINK;
                 DrawRectangle(col * CELL_SIZE, lig * CELL_SIZE, CELL_SIZE, CELL_SIZE, Fade(couleurCase, 0.18f));
-                DrawRectangleLinesEx((Rectangle){col*CELL_SIZE, lig*CELL_SIZE, CELL_SIZE, CELL_SIZE}, 2, couleurCase);
+                DrawRectangleLinesEx((Rectangle){ col*CELL_SIZE, lig*CELL_SIZE, CELL_SIZE, CELL_SIZE }, 2, couleurCase);
             }
 
             for (int i = 0; i < 8; i++) {
@@ -392,14 +469,17 @@ int main() {
 
             // Scores — avec les noms des joueurs
             DrawText(TextFormat("%s: %d", nomJ1, p.scoreNoir), 20, SCREEN_WIDTH + 20, 22, DARK_PINK);
-            DrawText("  ", 20 + MeasureText(TextFormat("%s: %d", nomJ1, p.scoreNoir), 22) + 10, SCREEN_WIDTH + 20, 22, WHITE);
-            DrawText(TextFormat("%s: %d", nomJ2, p.scoreBlanc), 20 + MeasureText(TextFormat("%s: %d", nomJ1, p.scoreNoir), 22) + 30, SCREEN_WIDTH + 20, 22, LIGHT_PINK);
+            DrawText(TextFormat("%s: %d", nomJ2, p.scoreBlanc),
+                20 + MeasureText(TextFormat("%s: %d", nomJ1, p.scoreNoir), 22) + 30,
+                SCREEN_WIDTH + 20, 22, LIGHT_PINK);
 
             // Bouton "?" (toggle coups possibles)
             bool survolAide = CheckCollisionPointRec(souris, btnAideCoups);
             DrawRectangleRec(btnAideCoups, afficherCoups ? DARK_PINK : (survolAide ? LIGHT_PINK : WOOD_COLOR));
             DrawRectangleLinesEx(btnAideCoups, 2, WHITE);
-            DrawText("?", btnAideCoups.x + btnAideCoups.width/2 - MeasureText("?", 22)/2, btnAideCoups.y + 8, 22, afficherCoups ? WHITE : BORDER_COLOR);
+            DrawText("?",
+                btnAideCoups.x + btnAideCoups.width/2 - MeasureText("?", 22)/2,
+                btnAideCoups.y + 8, 22, afficherCoups ? WHITE : BORDER_COLOR);
 
             // Bouton MENU
             bool survolBoutonMenu = CheckCollisionPointRec(souris, btnOuvrirMenu);
@@ -432,14 +512,15 @@ int main() {
                 DrawRectangleLinesEx(popupFenetre, 3, BORDER_COLOR);
                 DrawText("PAUSE", popupFenetre.x + 80, popupFenetre.y + 20, 30, BORDER_COLOR);
                 DrawText("<--", btnFermer.x, btnFermer.y, 25, BORDER_COLOR);
-
-                Rectangle btns[]  = {btnRejouer, btnRetour, btnQuitter};
-                char *labels[] = {"Rejouer", "Menu Principal", "Quitter"};
+                Rectangle btns[]  = { btnRejouer, btnRetour, btnQuitter };
+                char *labels[]    = { "Rejouer", "Menu Principal", "Quitter" };
                 for (int i = 0; i < 3; i++) {
                     bool h = CheckCollisionPointRec(souris, btns[i]);
                     DrawRectangleRec(btns[i], h ? DARK_PINK : LIGHT_PINK);
                     DrawRectangleLinesEx(btns[i], 2, BORDER_COLOR);
-                    DrawText(labels[i], btns[i].x + btns[i].width/2 - MeasureText(labels[i], 20)/2, btns[i].y + 15, 20, BORDER_COLOR);
+                    DrawText(labels[i],
+                        btns[i].x + btns[i].width/2 - MeasureText(labels[i], 20)/2,
+                        btns[i].y + 15, 20, BORDER_COLOR);
                 }
             }
 
@@ -450,22 +531,27 @@ int main() {
                 DrawRectangleLinesEx(popupConfirm, 3, BORDER_COLOR);
                 const char *msgConfirm = "Sauvegarder avant de quitter ?";
                 int msgW = MeasureText(msgConfirm, 17);
-                DrawText(msgConfirm, popupConfirm.x + (popupConfirm.width - msgW)/2, popupConfirm.y + 35, 17, BORDER_COLOR);
-
+                DrawText(msgConfirm,
+                    popupConfirm.x + (popupConfirm.width - msgW)/2,
+                    popupConfirm.y + 35, 17, BORDER_COLOR);
                 bool survolOui = CheckCollisionPointRec(souris, btnConfirmOui);
                 DrawRectangleRec(btnConfirmOui, survolOui ? DARK_PINK : LIGHT_PINK);
                 DrawRectangleLinesEx(btnConfirmOui, 2, BORDER_COLOR);
-                DrawText("Oui", btnConfirmOui.x + btnConfirmOui.width/2 - MeasureText("Oui", 20)/2, btnConfirmOui.y + 10, 20, BORDER_COLOR);
-
+                DrawText("Oui",
+                    btnConfirmOui.x + btnConfirmOui.width/2 - MeasureText("Oui", 20)/2,
+                    btnConfirmOui.y + 10, 20, BORDER_COLOR);
                 bool survolNon = CheckCollisionPointRec(souris, btnConfirmNon);
                 DrawRectangleRec(btnConfirmNon, survolNon ? DARK_PINK : LIGHT_PINK);
                 DrawRectangleLinesEx(btnConfirmNon, 2, BORDER_COLOR);
-                DrawText("Non", btnConfirmNon.x + btnConfirmNon.width/2 - MeasureText("Non", 20)/2, btnConfirmNon.y + 10, 20, BORDER_COLOR);
+                DrawText("Non",
+                    btnConfirmNon.x + btnConfirmNon.width/2 - MeasureText("Non", 20)/2,
+                    btnConfirmNon.y + 10, 20, BORDER_COLOR);
             }
 
             EndDrawing();
         }
     }
+
     CloseWindow();
     return 0;
 }
