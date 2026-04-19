@@ -2,6 +2,9 @@
 #include <stdio.h>
 
 #define INFINI 1000000
+#define COEFF_POSITION 10
+#define COEFF_MOBILITE 50
+#define COEFF_STABILITE 150 
 
 
 // Matrice de poids pour la stratégie de positionnement
@@ -97,9 +100,9 @@ int evaluer_plateau(int plateau[8][8], int ia, int humain) {
 
     // Calcul final
     int score_final = 0;
-    score_final += score_position * 10;           // Coef Position : 10
-    score_final += (mob_ia - mob_humain) * 50;    // Coef Mobilité : 50
-    score_final += (stab_ia - stab_humain) * 150; // Coef Stabilité : 150
+    score_final += score_position * COEFF_POSITION;           // Coef Position : 10
+    score_final += (mob_ia - mob_humain) * COEFF_MOBILITE;    // Coef Mobilité : 50
+    score_final += (stab_ia - stab_humain) * COEFF_STABILITE; // Coef Stabilité : 150
 
     // En fin de partie, le nombre de pions de l'abversaire rentre en compte
     if (vides < 10) score_final += (nb_ia - nb_humain) * 100;
@@ -110,49 +113,69 @@ int evaluer_plateau(int plateau[8][8], int ia, int humain) {
 
 
 // Algorithme Minimax
-int minimax(int plateau[8][8], int depth, bool isMax, int ia, int humain) {
-    Coup coups[64];
-    int joueur_actuel = isMax ? ia : humain;
-    int nb_coups = generer_coups_possibles(plateau, joueur_actuel, coups);
+//int minimax(int plateau[8][8], int depth, bool isMax, int ia, int humain) {
+    //Coup coups[64];
+    //int joueur_actuel = isMax ? ia : humain;
+    //int nb_coups = generer_coups_possibles(plateau, joueur_actuel, coups);
 
-    if (depth == 0) return evaluer_plateau(plateau, ia, humain);
+    //if (depth == 0) return evaluer_plateau(plateau, ia, humain);
 
-    if (nb_coups == 0) {
-        if (generer_coups_possibles(plateau, -joueur_actuel, coups) == 0)
-            return evaluer_plateau(plateau, ia, humain);
-        return minimax(plateau, depth - 1, !isMax, ia, humain);
-    }
+    //if (nb_coups == 0) {
+        //if (generer_coups_possibles(plateau, -joueur_actuel, coups) == 0)
+            //return evaluer_plateau(plateau, ia, humain);
+        //return minimax(plateau, depth - 1, !isMax, ia, humain);
+    //}
 
-    int bestScore = isMax ? -INFINI : INFINI;
-    for (int i = 0; i < nb_coups; i++) {
-        int copie[8][8];
-        copier_plateau(plateau, copie);
-        jouer_coup(copie, coups[i].ligne, coups[i].colonne, joueur_actuel);
-        int score = minimax(copie, depth - 1, !isMax, ia, humain);
-        if (isMax) { if (score > bestScore) bestScore = score; }
-        else { if (score < bestScore) bestScore = score; }
-    }
-    return bestScore;
-}
+    //int bestScore = isMax ? -INFINI : INFINI;
+    //for (int i = 0; i < nb_coups; i++) {
+        //int copie[8][8];
+        //copier_plateau(plateau, copie);
+        //jouer_coup(copie, coups[i].ligne, coups[i].colonne, joueur_actuel);
+        //int score = minimax(copie, depth - 1, !isMax, ia, humain);
+        //if (isMax) { if (score > bestScore) bestScore = score; }
+        //else { if (score < bestScore) bestScore = score; }
+    //}
+    //return bestScore;
+//}
 
 // Fonction appelée par le main pour choisir le meilleur coup
-Coup choisir_meilleur_coup(int plateau[8][8], int ia, int humain, int profondeur) {
-    Coup coups[64];
-    int nb = generer_coups_possibles(plateau, ia, coups);
-    Coup meilleur = coups[0];
-    int maxS = -1000000;
+//Coup choisir_meilleur_coup(int plateau[8][8], int ia, int humain, int profondeur) {
+    //Coup coups[64];
+    //int nb = generer_coups_possibles(plateau, ia, coups);
+    //Coup meilleur = coups[0];
+    //int maxS = -1000000;
 
-    for(int i=0; i<nb; i++) {
-        int copie[8][8];
-        copier_plateau(plateau, copie);
-        jouer_coup(copie, coups[i].ligne, coups[i].colonne, ia);
-        int s = minimax(copie, profondeur - 1, false, ia, humain);
-        if(s > maxS) {
-            maxS = s;
-            meilleur = coups[i];
+    //for(int i=0; i<nb; i++) {
+        //int copie[8][8];
+        //copier_plateau(plateau, copie);
+        //jouer_coup(copie, coups[i].ligne, coups[i].colonne, ia);
+        //int s = minimax(copie, profondeur - 1, false, ia, humain);
+        //if(s > maxS) {
+            //maxS = s;
+            //meilleur = coups[i];
+        //}
+    //}
+    //return meilleur;
+//}
+
+// fonction pour trier les coups basés sur la matrice de poids
+// Plus le poids est élevé, plus le coup est prioritaire
+void trier_coups(Coup liste_coups[], int nb_coups) {
+    for (int i= 0; i<nb_coups-1; i++) {
+        for (int j= i+1; j < nb_coups; j++) {
+            
+            // On récupère les poids des deux coups comparés
+            int poids1= POIDS_IA[liste_coups[i].ligne][liste_coups[i].colonne];
+            int poids2= POIDS_IA[liste_coups[j].ligne][liste_coups[j].colonne];
+
+            // Si le coup actuel a un poids inférieur au coup suivant, on échange
+            if (poids1 < poids2) {
+                Coup temp = liste_coups[i];
+                liste_coups[i] = liste_coups[j];
+                liste_coups[j] = temp;
+            }
         }
     }
-    return meilleur;
 }
 
 // Algorithme alphabeta
@@ -160,6 +183,7 @@ int alphabeta(int plateau[8][8], int profondeur, int alpha, int beta, bool estMa
     Coup listeCoups[64];
     int joueurActuel = estMax ? pionIA : pionHumain;
     int nbCoups = generer_coups_possibles(plateau, joueurActuel, listeCoups);
+    trier_coups(listeCoups, nbCoups);
 
     // Si on a atteint la profondeur max ou si la partie est finie, la fonction s'arrête
     if (profondeur == 0) {
@@ -220,6 +244,7 @@ int alphabeta(int plateau[8][8], int profondeur, int alpha, int beta, bool estMa
 Coup choisir_meilleur_coup_alphabeta(int plateau[8][8], int pionIA, int pionHumain, int profondeurMax) {
     Coup listeCoups[64];
     int nbCoups = generer_coups_possibles(plateau, pionIA, listeCoups);
+    trier_coups(listeCoups, nbCoups);
     Coup meilleurCoup = {-1, -1}; 
 
     if (nbCoups == 0) return meilleurCoup;
@@ -245,3 +270,4 @@ Coup choisir_meilleur_coup_alphabeta(int plateau[8][8], int pionIA, int pionHuma
     }
     return meilleurCoup;
 }
+
