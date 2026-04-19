@@ -148,6 +148,20 @@ Comme l'ordinateur ne peut pas prévoir tous les coups jusqu'à la fin de la par
 
 Pour le mode \emph{solo}, nous utiliserons l'algorithme \emph{A*}. Il servira à résoudre des situations précises en cherchant le chemin le plus court pour atteindre un objectif, par exemple pour gagner avec le plus petit nombre de coups possible.
 
+\section{\textbf{Complexité}}
+
+La plupart des fonctions qui gèrent le jeu Othello, comme vérifier si un coup est valide, jouer un coup ou générer les coups possibles, ont une complexité constante en $O(1)$. Cela vient du fait que le plateau fait toujours $8 \times 8$, donc le nombre d’opérations reste limité et ne dépend pas d’une taille variable.
+
+En revanche, les fonctions liées à l’intelligence artificielle sont beaucoup plus coûteuses. Les algorithmes comme \emph{Minimax} explorent un arbre de jeu en testant plusieurs coups possibles à chaque étape. Cette complexité dépend de deux paramètres : $b$ et $d$.
+
+Le paramètre $b$ correspond au nombre moyen de coups possibles à un moment donné (le facteur de branchement), et $d$ est la profondeur de recherche, c’est-à-dire le nombre de coups que l’IA anticipe.
+
+La complexité de Minimax est donc en $O(b^d)$, ce qui signifie que le nombre de positions analysées augmente très rapidement avec la profondeur.
+
+L’algorithme Alpha-Bêta améliore cela en évitant d’explorer certaines branches inutiles, ce qui réduit le temps de calcul. Dans le meilleur des cas, on peut descendre vers $O(b^{d/2})$, même si dans le pire cas cela reste exponentiel.
+
+Au final, ce sont surtout ces algorithmes d’IA qui déterminent les performances du programme, alors que les autres opérations sur le plateau restent très rapides.
+
 \section{\textbf{Défis techniques}}
 
 La première difficulté du projet concerne la gestion des coups valides sur le plateau. En effet, lors du placement d’un pion, le programme doit vérifier les huit directions possibles (horizontales, verticales et diagonales) afin de déterminer si un \emph{sandwich} est formé entre deux pions de même couleur, sans qu’une case vide n’apparaisse entre eux.
