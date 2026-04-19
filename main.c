@@ -37,6 +37,9 @@ int main() {
     GameScreen ecran = SCREEN_ACCUEIL;
     GameMode   mode  = MODE_PVP;
 
+    float timerIA = 0.0f;
+    float scrollY = 0; // Le décalage vertical actuel
+
     // Vérifier si une sauvegarde existe au lancement
     bool sauvegardeExiste = FileExists("save.bin");
 
@@ -80,7 +83,7 @@ int main() {
     Rectangle btnConfirmNon = { popupConfirm.x + 170, popupConfirm.y + 100, 110, 40 };
 
     bool reglesOuvertes = false;
-    Rectangle btnRegles       = { SCREEN_WIDTH/2 - 75, 600, 150, 20 };
+    Rectangle btnRegles       = { SCREEN_WIDTH/2 - 75, 530, 150, 20 };
     Rectangle popupRegles     = { 30, 60, SCREEN_WIDTH - 60, 565 };
     Rectangle btnFermerRegles = { popupRegles.x + 10, popupRegles.y + 15, 50, 25 };
 
@@ -183,64 +186,85 @@ int main() {
                 boutonPVI.x + btnW/2 - MeasureText("Joueur VS IA", 22)/2,
                 boutonPVI.y + btnH/2 - 11, 22, survolPVI ? WHITE : BORDER_COLOR);
 
-            // 6. Crédits
-            int creditsW = MeasureText("L3 Informatique - Projet Othello", 18);
-            DrawText("L3 Informatique - Projet Othello",
-                SCREEN_WIDTH/2 - creditsW/2, 540, 18, BORDER_COLOR);
+            // 6. Texte cliquable Règles
+            bool hRegles = CheckCollisionPointRec(souris, btnRegles);
+            DrawText("Voir les règles du jeu", SCREEN_WIDTH/2 - MeasureText("Voir les règles du jeu", 20)/2, 530, 20, hRegles ? DARK_PINK : BORDER_COLOR);
+            if (hRegles) DrawLine(SCREEN_WIDTH/2 - 100, 552, SCREEN_WIDTH/2 + 100, 552, DARK_PINK);
 
-            // Texte cliquable Règles
-            bool survolRegles = !reglesOuvertes && CheckCollisionPointRec(souris, btnRegles);
-            int rTxtW = MeasureText("Voir les règles du jeu", 18);
-            DrawText("Voir les règles du jeu",
-                SCREEN_WIDTH/2 - rTxtW/2, 600, 18,
-                survolRegles ? DARK_PINK : BORDER_COLOR);
-            if (survolRegles)
-                DrawLine(SCREEN_WIDTH/2 - rTxtW/2, 620,
-                         SCREEN_WIDTH/2 - rTxtW/2 + rTxtW, 620, DARK_PINK);
+            // 7. Crédits
+            DrawText("L3 Informatique - Projet Othello 2026", SCREEN_WIDTH/2 - MeasureText("L3 Informatique - Projet Othello 2026", 16)/2, SCREEN_WIDTH + 75, 16, Fade(BORDER_COLOR, 0.6f));
 
+            // Scrolling
+            if (reglesOuvertes) {
+                // On récupère le mouvement de la molette (retourne -1, 0 ou 1)
+                float molette = GetMouseWheelMove();
+                scrollY += molette * 20; // On multiplie par 20 pour que ce soit fluide
+
+                // On limite le défilement pour ne pas aller trop haut ou trop bas
+                if (scrollY > 0) scrollY = 0; 
+                if (scrollY < -80) scrollY = -80; // -300 dépend de la longueur du texte
+            }
             // Pop-up Règles
             if (reglesOuvertes) {
-                DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_WIDTH + 100, Fade(BLACK, 0.45f));
+                DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_WIDTH + 100, Fade(BLACK, 0.7f));
                 DrawRectangleRec(popupRegles, WOOD_COLOR);
                 DrawRectangleLinesEx(popupRegles, 3, BORDER_COLOR);
 
-                int rTitreW = MeasureText("Règles du jeu", 28);
-                DrawText("Règles du jeu",
-                    popupRegles.x + (popupRegles.width - rTitreW)/2,
-                    popupRegles.y + 18, 28, DARK_PINK);
+                int scissorX = (int)popupRegles.x;
+                int scissorY = (int)popupRegles.y + 60;
+                int scissorW = (int)popupRegles.width;
+                int scissorH = (int)popupRegles.height - 80;
 
-                DrawText("<--", popupRegles.x + 10, popupRegles.y + 15, 22, BORDER_COLOR);
+                BeginScissorMode(scissorX, scissorY, scissorW, scissorH);
 
-                int py = popupRegles.y + 65;
-                int px = popupRegles.x + 20;
-                int fs = 15;
-                int ft = 17;
-                int li = 22;
+                // Variables de positionnement pour que tout rentre
+                int py = (int)(popupRegles.y + 70 + (int)scrollY); // Point de départ Y
+                int px = popupRegles.x + 35; // Marge gauche
+                int li = 20;                 // Hauteur de ligne
+                int ft = 20;            // Taille police titres
+                int fs = 18;            // Taille police texte
 
-                DrawText("But du jeu", px, py, ft, BORDER_COLOR); py += li + 4;
-                DrawText("  Avoir le plus de pions de sa couleur en fin de partie.", px, py, fs, DARK_PINK); py += li + 8;
+                // Section 1
+                DrawText("BUT DU JEU :", px, py, ft, DARK_PINK); py += li;
+                DrawText("  Avoir le plus de pions en fin de partie.", px, py, fs, DARKGRAY); py += li + 15;
 
-                DrawText("Nombre de joueurs", px, py, ft, BORDER_COLOR); py += li + 4;
-                DrawText("  1 a 2 joueurs", px, py, fs, DARK_PINK); py += li + 8;
+                // Section 2
+                DrawText("Nombre de joueurs", px, py, ft, DARK_PINK); py += li;
+                DrawText("  1 a 2 joueurs.", px, py, fs, DARKGRAY); py += li + 15;
 
-                DrawText("Mise en place", px, py, ft, BORDER_COLOR); py += li + 4;
-                DrawText("  4 pions au centre : 2 rose fonce et 2 rose pale en diagonale.", px, py, fs, DARK_PINK); py += li;
-                DrawText("  Rose foncé commence toujours.", px, py, fs, DARK_PINK); py += li + 8;
+                // Section 3
+                DrawText("Mise en place", px, py, ft, DARK_PINK); py += li;
+                DrawText("  4 pions au centre : 2 rose foncé et 2 rose pale, placés", px, py, fs, DARKGRAY); py += li;
+                DrawText("  en diagonale.", px, py, fs, DARKGRAY); py += li;
+                DrawText("  Le rose foncé commence toujours.", px, py, fs, DARKGRAY); py += li + 15;
 
-                DrawText("Tour de jeu", px, py, ft, BORDER_COLOR); py += li + 4;
-                DrawText("  1. Poser un pion qui encadre au moins un pion adverse", px, py, fs, DARK_PINK); py += li;
-                DrawText("     (sandwich horizontal, vertical ou diagonal).", px, py, fs, DARK_PINK); py += li;
-                DrawText("  2. Les pions adverses encadres deviennent ta couleur.", px, py, fs, DARK_PINK); py += li + 8;
+                // Section 4
+                DrawText("Tour de jeu", px, py, ft, DARK_PINK); py += li;
+                DrawText("  1. Poses ton pion pour entourer l'ennemi.", px, py, fs, DARKGRAY); py += li;
+                DrawText("     (c'est le 'sandwich', qui est horizontal, vertical ou", px, py, fs, DARKGRAY); py += li;
+                DrawText("     diagonal).", px, py, fs, DARKGRAY); py += li;
+                DrawText("  2. Les pions adverses encadrés deviennent ta couleur.", px, py, fs, DARKGRAY); py += li + 15;
 
-                DrawText("Coup obligatoire", px, py, ft, BORDER_COLOR); py += li + 4;
-                DrawText("  Si tu peux jouer, tu dois jouer.", px, py, fs, DARK_PINK); py += li;
-                DrawText("  Si tu ne peux pas jouer, tu passes ton tour.", px, py, fs, DARK_PINK); py += li + 8;
+                // Section 5
+                DrawText("Coup obligatoire", px, py, ft, DARK_PINK); py += li;
+                DrawText("  Si tu peux jouer, tu dois obligatoirement jouer.", px, py, fs, DARKGRAY); py += li;
+                DrawText("  Si tu ne peux pas jouer, tu passes ton tour.", px, py, fs, DARKGRAY); py += li + 15;
 
-                DrawText("Fin de partie", px, py, ft, BORDER_COLOR); py += li + 4;
-                DrawText("  Le plateau est rempli OU aucun joueur ne peut jouer.", px, py, fs, DARK_PINK); py += li + 8;
+                // Section 6
+                DrawText("Fin de partie", px, py, ft, DARK_PINK); py += li;
+                DrawText("  - Le plateau est rempli;", px, py, fs, DARKGRAY); py += li;
+                DrawText("  - Aucun des joueurs ne peut jouer.", px, py, fs, DARKGRAY); py += li + 15;
 
-                DrawText("Gagnant", px, py, ft, BORDER_COLOR); py += li + 4;
-                DrawText("  Le joueur avec le plus grand nombre de pions l'emporte.", px, py, fs, DARK_PINK);
+                // Section 7
+                DrawText("Gagnant", px, py, ft, DARK_PINK); py += li;
+                DrawText("  Le joueur avec le plus grand nombre de pions l'emporte.", px, py, fs, DARKGRAY);
+
+                EndScissorMode();
+
+                // Titre et retour par dessus le scissor
+                DrawRectangle((int)popupRegles.x + 5, (int)popupRegles.y + 5, (int)popupRegles.width - 10, 55, WOOD_COLOR);
+                DrawText("RÈGLES DU JEU", (int)popupRegles.x + ((int)popupRegles.width - MeasureText("RÈGLES DU JEU", 30))/2, (int)popupRegles.y + 20, 30, DARK_PINK);
+                DrawText("<--", (int)popupRegles.x + 15, (int)popupRegles.y + 15, 20, BORDER_COLOR);
             }
 
             EndDrawing();
@@ -393,13 +417,18 @@ int main() {
 
                 // Logique IA
                 if (!partieTerminee && mode == MODE_PVI && p.joueurActuel == BLANC) {
-                    Coup cIA = choisir_meilleur_coup_alphabeta(p.cases, BLANC, NOIR, 6);
-                    if (cIA.ligne != -1) {
-                        jouer_coup(p.cases, cIA.ligne, cIA.colonne, BLANC);
-                        mettre_a_jour_scores(&p);
+                    timerIA += GetFrameTime();
+                    
+                    if (timerIA >= 1.0f) { // Attend 1 seconde
+                        Coup cIA = choisir_meilleur_coup_alphabeta(p.cases, BLANC, NOIR, 6);
+                        if (cIA.ligne != -1) {
+                            jouer_coup(p.cases, cIA.ligne, cIA.colonne, BLANC);
+                            mettre_a_jour_scores(&p);
+                        }
+                        p.joueurActuel = NOIR;
+                        sauvegarder_partie(p, mode, nomJ1, nomJ2);
+                        timerIA = 0.0f; // Reset le chrono
                     }
-                    p.joueurActuel = NOIR;
-                    sauvegarder_partie(p, mode, nomJ1, nomJ2);
                 }
             } else if (menuOuvert && !confirmQuitterOuvert) {
                 if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
