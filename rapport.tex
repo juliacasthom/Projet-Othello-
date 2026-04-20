@@ -34,28 +34,28 @@ Dans le cadre du module IN608N, plusieurs jeux nous étaient proposés comme sup
 
 \vspace{0.3cm}
 
-Les règles sont faciles à mettre en place, mais le jeu demande tout de même de la réflexion et de l’anticipation. Cela en fait un bon projet pour apprendre à organiser un programme et manipuler différentes structures de données.
+Les règles sont faciles à mettre en place, mais le jeu demande tout de même de la réflexion et de l'anticipation. Cela en fait un bon projet pour apprendre à organiser un programme et manipuler différentes structures de données.
 
 \vspace{0.3cm}
 
 Ce projet nous a permis de travailler sur plusieurs aspects de la programmation :
 \begin{itemize}
-    \item la gestion d’un plateau de jeu,
+    \item la gestion d'un plateau de jeu,
     \item la vérification des règles,
-    \item l’organisation du code en plusieurs modules.
+    \item l'organisation du code en plusieurs modules.
 \end{itemize}
 
 \vspace{0.3cm}
 
-L’objectif de ce projet est de concevoir un programme complet permettant de jouer à Othello, en respectant les règles du jeu et en proposant différents modes de jeu, notamment contre une intelligence artificielle.
+L'objectif de ce projet est de concevoir un programme complet permettant de jouer à Othello, en respectant les règles du jeu et en proposant différents modes de jeu, notamment contre une intelligence artificielle.
 
 \vspace{0.3cm}
 
-Le choix du langage C s’explique par sa rapidité d’exécution et sa gestion précise de la mémoire, ce qui est particulièrement utile pour manipuler efficacement le plateau de jeu et réaliser de nombreuses simulations dans le cadre de l’intelligence artificielle.
+Le choix du langage C s'explique par sa rapidité d'exécution et sa gestion précise de la mémoire, ce qui est particulièrement utile pour manipuler efficacement le plateau de jeu et réaliser de nombreuses simulations dans le cadre de l'intelligence artificielle.
 
 \vspace{0.3cm}
 
-Enfin, dans ce rapport, nous présenterons d’abord les règles du jeu, puis l’architecture du programme et les choix techniques réalisés. Nous détaillerons ensuite les algorithmes utilisés pour l’intelligence artificielle, avant de conclure par les difficultés rencontrées et l’organisation du travail.
+Enfin, dans ce rapport, nous présenterons d'abord les règles du jeu, puis l'architecture du programme et les choix techniques réalisés. Nous détaillerons ensuite les algorithmes utilisés pour l'intelligence artificielle, avant de conclure par les difficultés rencontrées et l'organisation du travail.
 
 \section{\textbf{Description du jeu Othello}}
 
@@ -63,7 +63,7 @@ Le jeu se joue sur un plateau de type \emph{othellier}, constitué d'une grille 
 
 \subsection{Règles de placement d'un pion}
 
-Pour poser un pion sur le plateau, certaines conditions doivent être respectées. La case ciblée doit être \emph{vide}, et le pion doit permettre d'\emph{encadrer} au moins un ou plusieurs pions adverses en formant un \emph{sandwich} entre le nouveau pion et un pion déjà présent de la même couleur. Ce sandwich peut être réalisé verticalement, horizontalement ou diagonalement, et il ne doit jamais y avoir de cases vides entre les deux pions encadrants. Il est impossible de poser un pion sans capturer au moins un pion adverse, c'est-à-dire qu'un sandwich “noir/noir” ou “blanc/blanc” est interdit. Il est également possible de réaliser des sandwiches dans plusieurs directions lors d'un seul coup.
+Pour poser un pion sur le plateau, certaines conditions doivent être respectées. La case ciblée doit être \emph{vide}, et le pion doit permettre d'\emph{encadrer} au moins un ou plusieurs pions adverses en formant un \emph{sandwich} entre le nouveau pion et un pion déjà présent de la même couleur. Ce sandwich peut être réalisé verticalement, horizontalement ou diagonalement, et il ne doit jamais y avoir de cases vides entre les deux pions encadrants. Il est impossible de poser un pion sans capturer au moins un pion adverse, c'est-à-dire qu'un sandwich "noir/noir" ou "blanc/blanc" est interdit. Il est également possible de réaliser des sandwiches dans plusieurs directions lors d'un seul coup.
 
 \subsection{Capture et conversion des pions}
 
@@ -150,37 +150,37 @@ Pour le mode \emph{solo}, nous utiliserons l'algorithme \emph{A*}. Il servira à
 
 \section{\textbf{Analyse de la complexité}}
 
-La plupart des fonctions qui gèrent le jeu Othello, comme vérifier si un coup est valide, jouer un coup ou générer les coups possibles, ont une complexité temporelle constante en $O(1)$. Cela vient du fait que le plateau fait toujours $8 \times 8$, donc le nombre d’opérations reste limité et ne dépend pas d’une taille variable.
+La plupart des fonctions qui gèrent le jeu Othello, comme vérifier si un coup est valide, jouer un coup ou générer les coups possibles, ont une complexité temporelle constante en $O(1)$. Cela vient du fait que le plateau fait toujours $8 \times 8$, donc le nombre d'opérations reste limité et ne dépend pas d'une taille variable.
 
-En revanche, les fonctions liées à l’intelligence artificielle sont beaucoup plus coûteuses. Les algorithmes comme \emph{Minimax} explorent un arbre de jeu en testant plusieurs coups possibles à chaque étape. Cette complexité dépend de deux paramètres : $b$ et $d$. Le paramètre $b$ correspond au nombre moyen de coups possibles à un moment donné (le facteur de branchement), et $d$ est la profondeur de recherche, c’est-à-dire le nombre de coups que l’IA anticipe. Dans notre cas, cette profondeur est fixée à $d = 5$.
+En revanche, les fonctions liées à l'intelligence artificielle sont beaucoup plus coûteuses. Les algorithmes comme \emph{Minimax} explorent un arbre de jeu en testant plusieurs coups possibles à chaque étape. Cette complexité dépend de deux paramètres : $b$ et $d$. Le paramètre $b$ correspond au nombre moyen de coups possibles à un moment donné (le facteur de branchement), et $d$ est la profondeur de recherche, c'est-à-dire le nombre de coups que l'IA anticipe. Dans notre cas, cette profondeur est fixée à $d = 5$.
 
 \subsection*{Complexité de Minimax}
 
 La complexité temporelle de \emph{Minimax} est :
 
 \begin{itemize}
-    \item \textbf{Pire cas :} $O(b^d)$, lorsque tous les nœuds de l’arbre doivent être explorés sans aucune optimisation.
+    \item \textbf{Pire cas :} $O(b^d)$, lorsque tous les nœuds de l'arbre doivent être explorés sans aucune optimisation.
     \item \textbf{Cas moyen :} $O(b^d)$ également, car en pratique sans optimisation, la croissance reste exponentielle et proche du pire cas.
     \item \textbf{Meilleur cas :} $O(b^d)$, car sans élagage, Minimax explore systématiquement toutes les branches possibles.
 \end{itemize}
 
-\subsection*{Complexité de l’algorithme Alpha-Bêta}
+\subsection*{Complexité de l'algorithme Alpha-Bêta}
 
-L’algorithme \emph{Alpha-Bêta} améliore Minimax en supprimant les branches inutiles grâce aux bornes $\alpha$ et $\beta$ :
+L'algorithme \emph{Alpha-Bêta} améliore Minimax en supprimant les branches inutiles grâce aux bornes $\alpha$ et $\beta$ :
 
 \begin{itemize}
-    \item \textbf{Pire cas :} $O(b^d)$, lorsque aucun élagage n’est possible (ordre des coups défavorable).
+    \item \textbf{Pire cas :} $O(b^d)$, lorsque aucun élagage n'est possible (ordre des coups défavorable).
     \item \textbf{Cas moyen :} environ $O(b^{\frac{3d}{4}})$, grâce à un élagage partiel dans la plupart des situations.
     \item \textbf{Meilleur cas :} $O(b^{\frac{d}{2}})$, lorsque les meilleurs coups sont explorés en premier, permettant un élagage maximal.
 \end{itemize}
 
-Au final, ce sont surtout ces algorithmes d’IA qui déterminent les performances du programme, alors que les autres opérations sur le plateau restent très rapides.
+Au final, ce sont surtout ces algorithmes d'IA qui déterminent les performances du programme, alors que les autres opérations sur le plateau restent très rapides.
 
 \section{\textbf{Défis techniques}}
 
-La première difficulté du projet concerne la gestion des coups valides sur le plateau. En effet, lors du placement d’un pion, le programme doit vérifier les huit directions possibles (horizontales, verticales et diagonales) afin de déterminer si un \emph{sandwich} est formé entre deux pions de même couleur, sans qu’une case vide n’apparaisse entre eux.
+La première difficulté du projet concerne la gestion des coups valides sur le plateau. En effet, lors du placement d'un pion, le programme doit vérifier les huit directions possibles (horizontales, verticales et diagonales) afin de déterminer si un \emph{sandwich} est formé entre deux pions de même couleur, sans qu'une case vide n'apparaisse entre eux.
 
-De même, un autre défi réside dans la complexité de l’algorithme \emph{Minimax} utilisé pour l’intelligence artificielle. Le nombre de configurations possibles dans le jeu d’Othello est très important, ce qui peut entraîner un grand nombre de calculs. Pour réduire le temps de recherche, l’algorithme sera donc optimisé à l’aide de l’\emph{élagage Alpha-Beta}, qui permet d’éviter l’exploration de branches inutiles.
+De même, un autre défi réside dans la complexité de l'algorithme \emph{Minimax} utilisé pour l'intelligence artificielle. Le nombre de configurations possibles dans le jeu d'Othello est très important, ce qui peut entraîner un grand nombre de calculs. Pour réduire le temps de recherche, l'algorithme sera donc optimisé à l'aide de l'\emph{élagage Alpha-Beta}, qui permet d'éviter l'exploration de branches inutiles.
 
 \section{\textbf{Organisation du groupe}}
 
@@ -190,14 +190,14 @@ Nous allons travailler ensemble sur la structure de base, puis nous répartirons
 
 \subsection{Implémentation du mode Joueur contre Joueur}
 
-La première étape du projet a consisté à mettre en place une version fonctionnelle du jeu en mode \emph{joueur contre joueur}, sans intelligence artificielle. Cette étape a permis de valider l’ensemble des règles du jeu ainsi que la structure générale du programme.
+La première étape du projet a consisté à mettre en place une version fonctionnelle du jeu en mode \emph{joueur contre joueur}, sans intelligence artificielle. Cette étape a permis de valider l'ensemble des règles du jeu ainsi que la structure générale du programme.
 
 \subsubsection{Boucle principale de jeu}
 
-Le déroulement de la partie repose sur une boucle principale infinie qui simule l’alternance des tours entre les joueurs. À chaque itération, le programme :
+Le déroulement de la partie repose sur une boucle principale infinie qui simule l'alternance des tours entre les joueurs. À chaque itération, le programme :
 
 \begin{enumerate}
-    \item Affiche l’état actuel du plateau,
+    \item Affiche l'état actuel du plateau,
     \item Demande au joueur courant de saisir un coup,
     \item Vérifie la validité de ce coup,
     \item Applique le coup et met à jour le plateau,
@@ -209,7 +209,7 @@ Si le coup saisi est invalide, le programme redemande simplement une nouvelle en
 
 \subsubsection{Saisie des coups}
 
-Les coups sont saisis sous forme d’une coordonnée alphanumérique (par exemple \texttt{D3}). Une fonction dédiée convertit cette entrée en indices exploitables dans le tableau :
+Les coups sont saisis sous forme d'une coordonnée alphanumérique (par exemple \texttt{D3}). Une fonction dédiée convertit cette entrée en indices exploitables dans le tableau :
 
 \begin{itemize}
     \item La lettre est transformée en indice de colonne,
@@ -220,19 +220,19 @@ Ces coordonnées sont stockées dans une structure \texttt{Coup}, facilitant leu
 
 \subsubsection{Validation des coups}
 
-La fonction \texttt{coupValide} vérifie si un coup respecte les règles du jeu. Elle s’assure que :
+La fonction \texttt{coupValide} vérifie si un coup respecte les règles du jeu. Elle s'assure que :
 
 \begin{itemize}
-    \item La case visée est bien à l’intérieur du plateau,
+    \item La case visée est bien à l'intérieur du plateau,
     \item La case est vide,
-    \item Au moins une capture est possible dans l’une des huit directions.
+    \item Au moins une capture est possible dans l'une des huit directions.
 \end{itemize}
 
 Pour cela, le programme parcourt les huit directions autour du coup grâce à un tableau de directions. La fonction \texttt{captureDirection} vérifie si un \emph{sandwich} est réalisable dans une direction donnée.
 
 \subsubsection{Gestion des captures}
 
-Lorsqu’un coup est valide, il est appliqué via la fonction \texttt{jouerCoup}. Celle-ci :
+Lorsqu'un coup est valide, il est appliqué via la fonction \texttt{jouerCoup}. Celle-ci :
 
 \begin{itemize}
     \item Place le pion du joueur courant sur le plateau,
@@ -244,7 +244,7 @@ Cette dernière modifie directement les cases du plateau en remplaçant les pion
 
 \subsubsection{Mise à jour des scores}
 
-Après chaque coup, le programme recalcule le nombre de pions noirs et blancs présents sur le plateau en parcourant l’ensemble de la grille. Ces valeurs sont stockées dans la structure \texttt{Plateau} et utilisées pour déterminer le vainqueur en fin de partie.
+Après chaque coup, le programme recalcule le nombre de pions noirs et blancs présents sur le plateau en parcourant l'ensemble de la grille. Ces valeurs sont stockées dans la structure \texttt{Plateau} et utilisées pour déterminer le vainqueur en fin de partie.
 
 \subsubsection{Changement de joueur}
 
@@ -252,7 +252,7 @@ Le changement de joueur est réalisé simplement en inversant la valeur du joueu
 
 \subsubsection{Détection de fin de partie}
 
-Après chaque tour, le programme vérifie s’il reste au moins un coup valide possible. Pour cela, il teste toutes les cases du plateau. Si aucun coup n’est possible, la partie se termine et le programme affiche :
+Après chaque tour, le programme vérifie s'il reste au moins un coup valide possible. Pour cela, il teste toutes les cases du plateau. Si aucun coup n'est possible, la partie se termine et le programme affiche :
 
 \begin{itemize}
     \item Le plateau final,
@@ -260,7 +260,7 @@ Après chaque tour, le programme vérifie s’il reste au moins un coup valide p
     \item Le vainqueur ou un match nul.
 \end{itemize}
 
-Cette étape garantit que la partie respecte les conditions d’arrêt définies par les règles d’Othello.
+Cette étape garantit que la partie respecte les conditions d'arrêt définies par les règles d'Othello.
 
 Le cœur de notre projet repose sur le développement d'une intelligence artificielle capable d'analyser le jeu et de prendre des décisions stratégiques. Nous avons implémenté l'algorithme \emph{Minimax} associé à une fonction d'évaluation multicritères.
 
@@ -281,7 +281,8 @@ Explication du fonctionnement de l'algorithme étape par étape:
 \end{enumerate}
 Afin de ne pas altérer la partie en cours lors des simulations, le programme utilise des copies temporaires de la structure \texttt{Plateau}. À chaque étage de l'arbre de décision, l'IA génère la liste des coups possibles, applique le mouvement sur une copie de la grille, puis descend au niveau suivant. Une fois la profondeur maximale atteinte, la fonction d'évaluation est appelée pour attribuer un score au plateau final imaginé.
 \medskip
-Malgré la capacité de l'algorithme \textsc{Minimax} à prédire les prochains mouvements, le nombre de combinaisons possibles à Othello augmente de façon exponentielle en fonction de la profondeur de recherche. Afin d'améliorer ce processus et de donner à l'IA la possibilité de réfléchir plus loin dans le même intervalle de temps, nous avons mis en œuvre l'élagage Alpha-Béta.
+Malgré la capacité de l'algorithme \textsc{Minimax} à prédire les prochains mouvements, le nombre de combinaisons possibles à Othello augmente de façon exponentielle en fonction de la profondeur de recherche. Afin d'améliorer ce processus et de donner à l'IA la possibilité de réfléchir plus loin dans le même intervalle de temps, nous avons mis en œuvre l'élagage Alpha-Béta. \hyperref[alg:minimax]{(cf annexe 10.1)}
+
 \subsection{L'élagage Alpha-Béta}
 Cet algorithme introduit deux bornes: 
 \begin{itemize}
@@ -296,7 +297,7 @@ Eplication de l'algorithme étape par étape:
 \end{itemize}
 \item La Coupure : Si à un moment donné $\alpha \ge \beta$, cela signifie que le joueur précédent ne choisira jamais cette branche, car il dispose déjà d'une meilleure option ailleurs. On arrête alors immédiatement l'exploration de ce sous-arbre.
 \end{enumerate}
-Cette méthode permet de réduire considérablement le nombre de nœuds visités.
+Cette méthode permet de réduire considérablement le nombre de nœuds visités. \hyperref[alg:alphabeta]{(cf annexe 10.2)}
 
 
 \subsection{La fonction d'évaluation stratégique}
@@ -338,18 +339,22 @@ Pour soutenir ces algorithmes, plusieurs fonctions essentielles ont été dével
 
 \section{\textbf{Conclusion}}
 
-Ce projet nous a permis de concevoir un jeu d’Othello complet en langage C, respectant toutes les règles officielles, ainsi qu’une interface qui laisse la possibilité de jouer en mode joueur contre joueur ou joueur contre intelligence artificielle.
+Ce projet nous a permis de concevoir un jeu d'Othello complet en langage C, respectant toutes les règles officielles, ainsi qu'une interface qui laisse la possibilité de jouer en mode joueur contre joueur ou joueur contre intelligence artificielle.
 
-L'objectif principal était de créer une intelligence artificielle capable de prendre des décisions stratégiques. Pour cela, nous avons utilisé l’algorithme \emph{Minimax}, optimisé par l’élagage \emph{Alpha-Bêta}. Ces méthodes nous ont permis d'effectuer la recherche dans un arbre de décision et la gestion de la complexité exponentielle. La fonction d’évaluation a aussi été très importante dans le comportement de l’IA. Elle combine plusieurs critères comme la mobilité, la stabilité des positions et le contrôle des coins, ce qui permet d’estimer de manière plus réaliste la valeur de chaque situation de jeu.
+L'objectif principal était de créer une intelligence artificielle capable de prendre des décisions stratégiques. Pour cela, nous avons utilisé l'algorithme \emph{Minimax}, optimisé par l'élagage \emph{Alpha-Bêta}. Ces méthodes nous ont permis d'effectuer la recherche dans un arbre de décision et la gestion de la complexité exponentielle. La fonction d'évaluation a aussi été très importante dans le comportement de l'IA. Elle combine plusieurs critères comme la mobilité, la stabilité des positions et le contrôle des coins, ce qui permet d'estimer de manière plus réaliste la valeur de chaque situation de jeu.
 
-Nous avons également étudié l’algorithme A*, mais nous n’en n'avons pas eu l'utilité. En effet, A* est conçu pour résoudre des problèmes de recherche de chemin, comme des trajets ou des labyrinthes, alors qu’Othello est un jeu de stratégie à deux joueurs où chaque action dépend directement de l’adversaire. Il n’était donc pas adapté à notre projet.
+Nous avons également étudié l'algorithme A*, mais nous n'en n'avons pas eu l'utilité. En effet, A* est conçu pour résoudre des problèmes de recherche de chemin, comme des trajets ou des labyrinthes, alors qu'Othello est un jeu de stratégie à deux joueurs où chaque action dépend directement de l'adversaire. Il n'était donc pas adapté à notre projet.
 
-Pour aller plus loin, plusieurs améliorations sont possibles pour enrichir le projet. Par exemple, on pourrait ajouter la règle du don de pion afin d’éviter certaines fins de partie trop rapides et de les rendre plus intéressantes. Du côté de l’intelligence artificielle, on pourrait  améliorer son efficacité en optimisant certaines parties du code, par exemple en organisant les coups explorés ou en évitant de recalculer certaines situations déjà rencontrées. Cela permettrait de rendre l’IA un peu plus rapide et plus efficace sans changer complètement son fonctionnement.
+Pour aller plus loin, plusieurs améliorations sont possibles pour enrichir le projet. Par exemple, on pourrait ajouter la règle du don de pion afin d'éviter certaines fins de partie trop rapides et de les rendre plus intéressantes. Du côté de l'intelligence artificielle, on pourrait  améliorer son efficacité en optimisant certaines parties du code, par exemple en organisant les coups explorés ou en évitant de recalculer certaines situations déjà rencontrées. Cela permettrait de rendre l'IA un peu plus rapide et plus efficace sans changer complètement son fonctionnement.
 
-Ce projet nous a permis de construire une base solide d’un jeu complet en C, et il reste encore plusieurs pistes simples d’amélioration pour le rendre plus fluide et plus intéressant à jouer.
+Ce projet nous a permis de construire une base solide d'un jeu complet en C, et il reste encore plusieurs pistes simples d'amélioration pour le rendre plus fluide et plus intéressant à jouer.
 
 \section{\textbf{Annexes}}
 \medskip
+
+\subsection{Algorithme MiniMax}
+\label{alg:minimax}
+
 \begin{algorithm}[H]
 \SetAlgoLined % Trace les lignes verticales
 \DontPrintSemicolon % Cache les points-virgules en fin de ligne
@@ -390,7 +395,12 @@ Ce projet nous a permis de construire une base solide d’un jeu complet en C, e
 }
 \caption{Algorithme Minimax}
 \end{algorithm}
+
 \medskip
+
+\subsection{Algorithme Alpha-Béta}
+\label{alg:alphabeta}
+
 \begin{algorithm}[H]
 \SetAlgoLined
 \DontPrintSemicolon
@@ -440,4 +450,4 @@ Ce projet nous a permis de construire une base solide d’un jeu complet en C, e
 
 
 
-\end{document}\documentclass{article}
+\end{document}
