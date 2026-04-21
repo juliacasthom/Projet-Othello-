@@ -3,6 +3,7 @@
 \usepackage{titlesec}
 \usepackage[french, ruled, vlined, linesnumbered]{algorithm2e} 
 \usepackage[table]{xcolor}
+\usepackage{float}
 
 % Pr les indentations  
 \titleformat{\subsection}
@@ -31,6 +32,12 @@
 
 \noindent
 Dans le cadre du module IN608N, plusieurs jeux nous étaient proposés comme support de projet. Nous avons choisi de travailler sur Othello, aussi appelé Reversi, car il est à la fois simple à comprendre et intéressant à jouer.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\textwidth]{img_depart.png}
+    \caption{Accueil de l'interface}
+    \label{fig:img_depart}
+\end{figure}
 
 \vspace{0.3cm}
 
@@ -57,9 +64,20 @@ Le choix du langage C s'explique par sa rapidité d'exécution et sa gestion pr�
 
 Enfin, dans ce rapport, nous présenterons d'abord les règles du jeu, puis l'architecture du programme et les choix techniques réalisés. Nous détaillerons ensuite les algorithmes utilisés pour l'intelligence artificielle, avant de conclure par les difficultés rencontrées et l'organisation du travail.
 
+
+\vspace{1.0 cm}
+
+
 \section{\textbf{Description du jeu Othello}}
 
 Le jeu se joue sur un plateau de type \emph{othellier}, constitué d'une grille de huit cases par huit. Chaque joueur dispose de trente-deux pions de sa couleur, \emph{noir} ou \emph{blanc}. La position de départ est toujours identique : les pions noirs occupent les cases e4 et d5, tandis que les pions blancs se trouvent sur les cases d4 et e5. Le joueur possédant les pions noirs commence toujours la partie, puis les tours s'alternent entre les deux joueurs.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\textwidth]{plateau_depart.png}
+    \caption{Plateau de jeu avec les positions de départ}
+    \label{fig:plateau_depart}
+\end{figure}
 
 \subsection{Règles de placement d'un pion}
 
@@ -72,6 +90,13 @@ Lorsqu'un pion encadre un ou plusieurs pions adverses, ceux-ci changent de coule
 \subsection{Changement de joueur}
 
 Le changement de joueur s'effectue normalement à chaque tour. Toutefois, si l'adversaire ne peut jouer aucun coup valide, le joueur actif rejoue immédiatement. Dans le cas contraire, l'adversaire doit obligatoirement effectuer son tour.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\textwidth]{ex_deplacements.png}
+    \caption{Exemple de déplacement et capture}
+    \label{fig:ex_deplacements}
+\end{figure}
 
 \subsection{Fin de partie}
 
@@ -131,6 +156,17 @@ Le programme suivra une boucle principale représentant le déroulement de la pa
 \end{enumerate}
 
 Cette organisation permet de séparer clairement la logique de jeu, l'interaction utilisateur et les décisions de l'intelligence artificielle.
+
+\vspace{0.5cm}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\textwidth]{regles.png}
+    \caption{Règles du jeu}
+    \label{fig:regles}
+\end{figure}
+
+\vspace{2cm}
 
 \section{\textbf{Algorithmes utilisés}}
 
@@ -250,6 +286,15 @@ Après chaque coup, le programme recalcule le nombre de pions noirs et blancs pr
 
 Le changement de joueur est réalisé simplement en inversant la valeur du joueur courant (1 devient -1 et inversement). Cette approche permet une gestion efficace et compacte des tours.
 
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\textwidth]{score.png}
+    \caption{Affichage du score et du joueur courant}
+    \label{fig:score}
+\end{figure}
+
+
+
 \subsubsection{Détection de fin de partie}
 
 Après chaque tour, le programme vérifie s'il reste au moins un coup valide possible. Pour cela, il teste toutes les cases du plateau. Si aucun coup n'est possible, la partie se termine et le programme affiche :
@@ -302,12 +347,17 @@ Cette méthode permet de réduire considérablement le nombre de nœuds visités
 
 \subsection{La fonction d'évaluation stratégique}
 
-La fonction d'évaluation est l'élément qui permet à l'IA de "juger" la qualité d'une position. À Othello, le simple nombre de pions est trompeur ; notre fonction utilise donc une combinaison de quatre critères stratégiques :
-
 \begin{itemize}
-    \item \textbf{La stabilité des bords :} Une fonction spécifique analyse les pions situés sur les bords du plateau. Si un pion est relié à un coin possédé, il est considéré comme stable (impossible à capturer), ce qui lui donne un poids prédominant dans le score.
+    \item \textbf{Générateur de coups :} Cette fonction parcourt systématiquement le plateau pour lister toutes les cases vides respectant la règle du "sandwich" dans les huit directions possibles.
+    \item \textbf{Gestion des captures :} La fonction \texttt{jouer\_coup} assure la mise à jour du plateau en retournant tous les pions adverses emprisonnés lors d'un mouvement.
+    \item \textbf{Validation par tests unitaires :} L'ensemble de ces fonctions a été validé par une suite de tests unitaires indépendants, garantissant la fiabilité du calcul des scores et du respect des règles avant l'intégration finale.
+    \item \textbf{La mobilité :} L'algorithme calcule la différence entre le nombre de coups possibles pour l'IA et pour l'adversaire. L'objectif est de restreindre les options de l'humain pour le forcer, à terme, à jouer des coups défavorables.
 
-\begin{table}
+    \item \textbf{Le positionnement (Matrice de poids) :} Nous utilisons une matrice constante qui attribue une valeur à chaque case. Les coins sont les cases les plus valorisées (+100), tandis que les cases adjacentes aux coins reçoivent un malus car elles risquent d'offrir l'accès aux coins à l'adversaire.
+
+    \item \textbf{Le matériel (Comptage des pions) :} Le nombre de pions est pris en compte, mais son importance est pondérée selon la phase de jeu. Il est secondaire en début de partie et devient le critère principal lors des derniers coups pour assurer la victoire finale.
+
+\begin{table}[H]
 \centering
 \caption{Matrice de poids}
 \begin{tabular}{|c|c|c|c|c|c|c|c|}
@@ -322,11 +372,10 @@ La fonction d'évaluation est l'élément qui permet à l'IA de "juger" la quali
 \rowcolor{pink!20} \textbf{100} & -20 & 10 & 5 & 5 & 10 & -20 & \textbf{100} \\ \hline
 \end{tabular}
 \end{table}
-
-    \item \textbf{La mobilité :} L'algorithme calcule la différence entre le nombre de coups possibles pour l'IA et pour l'adversaire. L'objectif est de restreindre les options de l'humain pour le forcer, à terme, à jouer des coups défavorables.
-    \item \textbf{Le positionnement (Matrice de poids) :} Nous utilisons une matrice constante qui attribue une valeur à chaque case. Les coins sont les cases les plus valorisées (+100), tandis que les cases adjacentes aux coins reçoivent un malus car elles risquent d'offrir l'accès aux coins à l'adversaire.
-    \item \textbf{Le matériel (Comptage des pions) :} Le nombre de pions est pris en compte, mais son importance est pondérée selon la phase de jeu. Il est secondaire en début de partie et devient le critère principal lors des derniers coups pour assurer la victoire finale.
 \end{itemize}
+
+\vspace{0.3cm}
+
 
 \subsection{Logique de jeu et fonctions de support}
 
@@ -447,7 +496,5 @@ Ce projet nous a permis de construire une base solide d'un jeu complet en C, et 
 }
 \caption{Algorithme Alpha-Béta}
 \end{algorithm}
-
-
 
 \end{document}
