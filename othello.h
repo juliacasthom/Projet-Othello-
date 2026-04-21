@@ -57,17 +57,18 @@ bool charger_partie(Plateau *p, GameMode *m, char* n1, char* n2);
 
 // --- INTELLIGENCE ARTIFICIELLE (ia.c) ---
 
-// Fonctions de calcul de score (Heuristiques)
+// Fonctions de calcul de score
 int evaluer_plateau(int plateau[8][8], int pionIA, int pionHumain);
 int calculer_score_position(int plateau[8][8], int ia, int humain);
 int calculer_stabilite_bords(int plateau[8][8], int joueur);
+void trier_coups(Coup liste_coups[], int nb_coups);
 
 // Algorithmes de recherche
 int minimax(int plateau[8][8], int profondeur, bool estMax, int pionIA, int pionHumain);
 int alphabeta(int plateau[8][8], int profondeur, int alpha, int beta, bool estMax, int pionIA, int pionHumain);
 
 // Fonctions de sélection du meilleur coup
-Coup choisir_meilleur_coup(int plateau[8][8], int ia, int humain, int profondeur);
+Coup choisir_meilleur_coup_minimax(int plateau[8][8], int ia, int humain, int profondeur);
 Coup choisir_meilleur_coup_alphabeta(int plateau[8][8], int pionIA, int pionHumain, int profondeurMax);
 
 // Utilitaires de simulation
