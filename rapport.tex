@@ -32,7 +32,7 @@
     Lucile Pradon \\ 
     Sarah Khider \par}
     \vspace{1.5cm}
-    {\large 09 avril 2026 \par}
+    {\large 24 avril 2026 \par}
     \end{center}
     \vfill
 \end{titlepage}
@@ -45,12 +45,6 @@
 
 \noindent
 Dans le cadre du module IN608N, plusieurs jeux nous étaient proposés comme support de projet. Nous avons choisi de travailler sur Othello, aussi appelé Reversi, car il est à la fois simple à comprendre et intéressant à jouer.
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.5\textwidth]{img_depart.png}
-    \caption{Accueil de l'interface}
-    \label{fig:img_depart}
-\end{figure}
 
 \vspace{0.3cm}
 
@@ -78,14 +72,11 @@ Le choix du langage C s'explique par sa rapidité d'exécution et sa gestion pr�
 Enfin, dans ce rapport, nous présenterons d'abord les règles du jeu, puis l'architecture du programme et les choix techniques réalisés. Nous détaillerons ensuite les algorithmes utilisés pour l'intelligence artificielle, avant de conclure par les difficultés rencontrées et l'organisation du travail.
 
 
-\vspace{1.0 cm}
-
-
 \section{\textbf{Description du jeu Othello}}
 
 Le jeu se joue sur un plateau de type \emph{othellier}, constitué d'une grille de huit cases par huit. Chaque joueur dispose de trente-deux pions de sa couleur, \emph{noir} ou \emph{blanc}. La position de départ est toujours identique : les pions noirs occupent les cases e4 et d5, tandis que les pions blancs se trouvent sur les cases d4 et e5. Le joueur possédant les pions noirs commence toujours la partie, puis les tours s'alternent entre les deux joueurs.
 
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.5\textwidth]{plateau_depart.png}
     \caption{Plateau de jeu avec les positions de départ}
@@ -149,9 +140,9 @@ Ces structures rendent le programme plus lisible et facilitent la maintenance du
 Le code sera organisé autour de trois modules principaux :
 
 \begin{itemize}
-    \item \textbf{Le moteur de jeu :} Il contiendra les fonctions pour vérifier si un coup est possible, retourner les pions capturés et déterminer quand la partie est terminée.
-    \item \textbf{L'intelligence artificielle :} Ce module servira à calculer le meilleur coup à jouer pour l'ordinateur en analysant plusieurs coups à l'avance.
-    \item \textbf{L'interface :} Elle s'occupera d'afficher la grille dans la console et de demander aux joueurs de choisir leurs cases.
+    \item \textbf{Le moteur de jeu :} C'est ici que sont gérées les règles d'Othello (vérification des captures, retournement des pions). Ce fichier s'occupe aussi de la sauvegarde automatique : il enregistre l'état du plateau et le nom des joueurs dans un fichier pour pouvoir reprendre une partie plus tard.
+    \item \textbf{L'intelligence artificielle :} Ce module contient toute la réflexion de l'ordinateur. On y trouve l'algorithme \emph{Alpha-Bêta}, l'algorithme \emph{MiniMax} et la fonction qui donne une note au plateau en combinant une matrice de poids stratégiques, le calcul de la stabilité des pions sur les bords et la mobilité du joueur.
+    \item \textbf{L'interface :} Nous utilisons la bibliothèque \emph{Raylib} pour créer une véritable fenêtre de jeu. Ce fichier gère l'aspect visuel, les menus d'accueil, la souris pour poser les pions et le système de défilement pour lire les règles.
 \end{itemize}
 
 
@@ -170,7 +161,6 @@ Le programme suivra une boucle principale représentant le déroulement de la pa
 
 Cette organisation permet de séparer clairement la logique de jeu, l'interaction utilisateur et les décisions de l'intelligence artificielle.
 
-\vspace{0.5cm}
 
 \begin{figure}[h]
     \centering
@@ -179,67 +169,24 @@ Cette organisation permet de séparer clairement la logique de jeu, l'interactio
     \label{fig:regles}
 \end{figure}
 
-\vspace{2cm}
-
-\section{\textbf{Algorithmes utilisés}}
-
-L'objectif est de créer une intelligence artificielle capable de jouer contre un humain. Pour cela, nous allons utiliser les algorithmes suivants :
-
-\subsection{Minimax et élagage Alpha-Beta}
-
-Pour le mode "Joueur contre IA", nous utiliserons l'algorithme \emph{Minimax}. Son rôle est de simuler les tours suivants pour choisir le coup le plus avantageux pour l'ordinateur. Pour gagner du temps dans les calculs, nous ajouterons l'\emph{élagage Alpha-Beta}. Cela permet d'ignorer les mauvaises stratégies sans avoir à les explorer entièrement, ce qui rend l'IA plus rapide.
-
-\subsection{Fonction d'évaluation}
-
-Comme l'ordinateur ne peut pas prévoir tous les coups jusqu'à la fin de la partie, il utilisera une \emph{fonction d'évaluation}. Cette fonction donnera une "note" au plateau à un moment donné selon des critères stratégiques, comme le fait de posséder les coins ou d'avoir beaucoup de choix de coups possibles (la mobilité).
-
-\subsection{Algorithme A* pour le mode solo}
-
-Pour le mode \emph{solo}, nous utiliserons l'algorithme \emph{A*}. Il servira à résoudre des situations précises en cherchant le chemin le plus court pour atteindre un objectif, par exemple pour gagner avec le plus petit nombre de coups possible.
-
-\section{\textbf{Analyse de la complexité}}
-
-La plupart des fonctions qui gèrent le jeu Othello, comme vérifier si un coup est valide, jouer un coup ou générer les coups possibles, ont une complexité temporelle constante en $O(1)$. Cela vient du fait que le plateau fait toujours $8 \times 8$, donc le nombre d'opérations reste limité et ne dépend pas d'une taille variable.
-
-En revanche, les fonctions liées à l'intelligence artificielle sont beaucoup plus coûteuses. Les algorithmes comme \emph{Minimax} explorent un arbre de jeu en testant plusieurs coups possibles à chaque étape. Cette complexité dépend de deux paramètres : $b$ et $d$. Le paramètre $b$ correspond au nombre moyen de coups possibles à un moment donné (le facteur de branchement), et $d$ est la profondeur de recherche, c'est-à-dire le nombre de coups que l'IA anticipe. Dans notre cas, cette profondeur est fixée à $d = 5$.
-
-\subsection*{Complexité de Minimax}
-
-La complexité temporelle de \emph{Minimax} est :
-
-\begin{itemize}
-    \item \textbf{Pire cas :} $O(b^d)$, lorsque tous les nœuds de l'arbre doivent être explorés sans aucune optimisation.
-    \item \textbf{Cas moyen :} $O(b^d)$ également, car en pratique sans optimisation, la croissance reste exponentielle et proche du pire cas.
-    \item \textbf{Meilleur cas :} $O(b^d)$, car sans élagage, Minimax explore systématiquement toutes les branches possibles.
-\end{itemize}
-
-\subsection*{Complexité de l'algorithme Alpha-Bêta}
-
-L'algorithme \emph{Alpha-Bêta} améliore Minimax en supprimant les branches inutiles grâce aux bornes $\alpha$ et $\beta$ :
-
-\begin{itemize}
-    \item \textbf{Pire cas :} $O(b^d)$, lorsque aucun élagage n'est possible (ordre des coups défavorable).
-    \item \textbf{Cas moyen :} environ $O(b^{\frac{3d}{4}})$, grâce à un élagage partiel dans la plupart des situations.
-    \item \textbf{Meilleur cas :} $O(b^{\frac{d}{2}})$, lorsque les meilleurs coups sont explorés en premier, permettant un élagage maximal.
-\end{itemize}
-
-Au final, ce sont surtout ces algorithmes d'IA qui déterminent les performances du programme, alors que les autres opérations sur le plateau restent très rapides.
-
 \section{\textbf{Défis techniques}}
 
 La première difficulté du projet concerne la gestion des coups valides sur le plateau. En effet, lors du placement d'un pion, le programme doit vérifier les huit directions possibles (horizontales, verticales et diagonales) afin de déterminer si un \emph{sandwich} est formé entre deux pions de même couleur, sans qu'une case vide n'apparaisse entre eux.
 
-De même, un autre défi réside dans la complexité de l'algorithme \emph{Minimax} utilisé pour l'intelligence artificielle. Le nombre de configurations possibles dans le jeu d'Othello est très important, ce qui peut entraîner un grand nombre de calculs. Pour réduire le temps de recherche, l'algorithme sera donc optimisé à l'aide de l'\emph{élagage Alpha-Beta}, qui permet d'éviter l'exploration de branches inutiles.
-
-\section{\textbf{Organisation du groupe}}
-
-Nous allons travailler ensemble sur la structure de base, puis nous répartirons les tâches pour la partie algorithmique. Les premières étapes seront de coder les règles du jeu et l'affichage simple, avant de passer au développement des intelligences artificielles et aux tests pour régler la difficulté du jeu.
+De même, un autre défi réside dans la complexité de l'algorithme \emph{Minimax} utilisé pour l'intelligence artificielle. Le nombre de configurations possibles dans le jeu d'Othello est très important, ce qui peut entraîner un grand nombre de calculs. Pour réduire le temps de recherche, l'algorithme sera donc optimisé à l'aide de l'\emph{élagage Alpha-Bêta}, qui permet d'éviter l'exploration de branches inutiles.
 
 \section{\textbf{Algorithmique et Intelligence Artificielle}}
 
 \subsection{Implémentation du mode Joueur contre Joueur}
 
 La première étape du projet a consisté à mettre en place une version fonctionnelle du jeu en mode \emph{joueur contre joueur}, sans intelligence artificielle. Cette étape a permis de valider l'ensemble des règles du jeu ainsi que la structure générale du programme.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{accueil_JvsJ.png}
+    \caption{Accueil de l'interface}
+    \label{fig:accueil_JvsJ}
+\end{figure}
 
 \subsubsection{Boucle principale de jeu}
 
@@ -320,9 +267,20 @@ Après chaque tour, le programme vérifie s'il reste au moins un coup valide pos
 
 Cette étape garantit que la partie respecte les conditions d'arrêt définies par les règles d'Othello.
 
-Le cœur de notre projet repose sur le développement d'une intelligence artificielle capable d'analyser le jeu et de prendre des décisions stratégiques. Nous avons implémenté l'algorithme \emph{Minimax} associé à une fonction d'évaluation multicritères.
+Le cœur de notre projet repose sur l'algorithme \emph{Minimax}, que nous avons optimisé par un \emph{élagage Alpha-Bêta} afin d'améliorer les performances de recherche.
 
-\subsection{L'algorithme Minimax}
+\subsection{Implémentation du mode Joueur contre Intelligence artificelle}
+
+La seconde étape du projet a porté sur le développement du mode joueur contre intelligence artificielle. Cette phase a permis d'intégrer l'algorithme Alpha-Bêta, l'algorithme Minimax et la fonction d'évaluation afin de proposer un mode permettant à l'utilisateur de jouer seul.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{accueil_JvsIA.png}
+    \caption{Sélection du mode Joueur VS IA}
+    \label{fig:accueil_JvsIA}
+\end{figure}
+
+\subsubsection{L'algorithme Minimax}
 
 Pour permettre à l'ordinateur d'anticiper les coups de son adversaire, nous avons développé l'algorithme \emph{Minimax}. Ce procédé fonctionne par récursion : l'IA simule ses propres coups (recherche du maximum) et les réponses optimales de l'adversaire (recherche du minimum) sur une profondeur de recherche définie.
 
@@ -339,13 +297,13 @@ Explication du fonctionnement de l'algorithme étape par étape:
 \end{enumerate}
 Afin de ne pas altérer la partie en cours lors des simulations, le programme utilise des copies temporaires de la structure \texttt{Plateau}. À chaque étage de l'arbre de décision, l'IA génère la liste des coups possibles, applique le mouvement sur une copie de la grille, puis descend au niveau suivant. Une fois la profondeur maximale atteinte, la fonction d'évaluation est appelée pour attribuer un score au plateau final imaginé.
 \medskip
-Malgré la capacité de l'algorithme \textsc{Minimax} à prédire les prochains mouvements, le nombre de combinaisons possibles à Othello augmente de façon exponentielle en fonction de la profondeur de recherche. Afin d'améliorer ce processus et de donner à l'IA la possibilité de réfléchir plus loin dans le même intervalle de temps, nous avons mis en œuvre l'élagage Alpha-Béta. \hyperref[alg:minimax]{(cf annexe 10.1)}
+Malgré la capacité de l'algorithme \textsc{Minimax} à prédire les prochains mouvements, le nombre de combinaisons possibles à Othello augmente de façon exponentielle en fonction de la profondeur de recherche. Afin d'améliorer ce processus et de donner à l'IA la possibilité de réfléchir plus loin dans le même intervalle de temps, nous avons mis en œuvre l'élagage Alpha-Bêta. \hyperref[alg:minimax]{(cf annexe 10.1)}
 
-\subsection{L'élagage Alpha-Béta}
+\subsubsection{L'élagage Alpha-Bêta}
 Cet algorithme introduit deux bornes: 
 \begin{itemize}
     \item Alpha $\alpha$ : Le meilleur score que MAX est assuré d'avoir jusqu'ici (initialisé à $-\infty$\ ).
-    \item Beta $\beta$ : Le meilleur score que MIN est assuré d'avoir jusqu'ici (initialisé à $+\infty$\ ).
+    \item Bêta $\beta$ : Le meilleur score que MIN est assuré d'avoir jusqu'ici (initialisé à $+\infty$\ ).
 \end{itemize}
 Eplication de l'algorithme étape par étape: 
 \begin{enumerate}
@@ -358,15 +316,14 @@ Eplication de l'algorithme étape par étape:
 Cette méthode permet de réduire considérablement le nombre de nœuds visités. \hyperref[alg:alphabeta]{(cf annexe 10.2)}
 
 
-\subsection{La fonction d'évaluation stratégique}
+\subsubsection{La fonction d'évaluation stratégique}
 
 \begin{itemize}
-    \item \textbf{Générateur de coups :} Cette fonction parcourt systématiquement le plateau pour lister toutes les cases vides respectant la règle du "sandwich" dans les huit directions possibles.
-    \item \textbf{Gestion des captures :} La fonction \texttt{jouer\_coup} assure la mise à jour du plateau en retournant tous les pions adverses emprisonnés lors d'un mouvement.
-    \item \textbf{Validation par tests unitaires :} L'ensemble de ces fonctions a été validé par une suite de tests unitaires indépendants, garantissant la fiabilité du calcul des scores et du respect des règles avant l'intégration finale.
     \item \textbf{La mobilité :} L'algorithme calcule la différence entre le nombre de coups possibles pour l'IA et pour l'adversaire. L'objectif est de restreindre les options de l'humain pour le forcer, à terme, à jouer des coups défavorables.
 
     \item \textbf{Le positionnement (Matrice de poids) :} Nous utilisons une matrice constante qui attribue une valeur à chaque case. Les coins sont les cases les plus valorisées (+100), tandis que les cases adjacentes aux coins reçoivent un malus car elles risquent d'offrir l'accès aux coins à l'adversaire.
+
+    \item \textbf{La stabilité :} Cette fonction identifie les pions situés sur les bords et reliés aux coins. Ces pions sont considérés comme stables car ils ne peuvent plus être retournés, ce qui sécurise le score de l'IA.
 
     \item \textbf{Le matériel (Comptage des pions) :} Le nombre de pions est pris en compte, mais son importance est pondérée selon la phase de jeu. Il est secondaire en début de partie et devient le critère principal lors des derniers coups pour assurer la victoire finale.
 
@@ -390,7 +347,7 @@ Cette méthode permet de réduire considérablement le nombre de nœuds visités
 \vspace{0.3cm}
 
 
-\subsection{Logique de jeu et fonctions de support}
+\subsubsection{Logique de jeu et fonctions de support}
 
 Pour soutenir ces algorithmes, plusieurs fonctions essentielles ont été développées dans le moteur de jeu :
 \begin{itemize}
@@ -398,6 +355,34 @@ Pour soutenir ces algorithmes, plusieurs fonctions essentielles ont été dével
     \item \textbf{Gestion des captures :} La fonction \texttt{jouer\_coup} assure la mise à jour du plateau en retournant tous les pions adverses emprisonnés lors d'un mouvement.
     \item \textbf{Validation par tests unitaires :} L'ensemble de ces fonctions a été validé par une suite de tests unitaires indépendants, garantissant la fiabilité du calcul des scores et du respect des règles avant l'intégration finale.
 \end{itemize}
+
+\section{\textbf{Analyse de la complexité}}
+
+La plupart des fonctions qui gèrent le jeu Othello, comme vérifier si un coup est valide, jouer un coup ou générer les coups possibles, ont une complexité temporelle constante en $O(1)$. Cela vient du fait que le plateau fait toujours $8 \times 8$, donc le nombre d'opérations reste limité et ne dépend pas d'une taille variable.
+
+En revanche, les fonctions liées à l'intelligence artificielle sont beaucoup plus coûteuses. Les algorithmes comme \emph{Minimax} explorent un arbre de jeu en testant plusieurs coups possibles à chaque étape. Cette complexité dépend de deux paramètres : $b$ et $d$. Le paramètre $b$ correspond au nombre moyen de coups possibles à un moment donné (le facteur de branchement), et $d$ est la profondeur de recherche, c'est-à-dire le nombre de coups que l'IA anticipe. Dans notre cas, cette profondeur est fixée à $d = 5$.
+
+\subsection*{Complexité de Minimax}
+
+La complexité temporelle de \emph{Minimax} est :
+
+\begin{itemize}
+    \item \textbf{Pire cas :} $O(b^d)$, lorsque tous les nœuds de l'arbre doivent être explorés sans aucune optimisation.
+    \item \textbf{Cas moyen :} $O(b^d)$ également, car en pratique sans optimisation, la croissance reste exponentielle et proche du pire cas.
+    \item \textbf{Meilleur cas :} $O(b^d)$, car sans élagage, Minimax explore systématiquement toutes les branches possibles.
+\end{itemize}
+
+\subsection*{Complexité de l'algorithme Alpha-Bêta}
+
+L'algorithme \emph{Alpha-Bêta} améliore Minimax en supprimant les branches inutiles grâce aux bornes $\alpha$ et $\beta$ :
+
+\begin{itemize}
+    \item \textbf{Pire cas :} $O(b^d)$, lorsque aucun élagage n'est possible (ordre des coups défavorable).
+    \item \textbf{Cas moyen :} environ $O(b^{\frac{3d}{4}})$, grâce à un élagage partiel dans la plupart des situations.
+    \item \textbf{Meilleur cas :} $O(b^{\frac{d}{2}})$, lorsque les meilleurs coups sont explorés en premier, permettant un élagage maximal.
+\end{itemize}
+
+Au final, ce sont surtout ces algorithmes d'IA qui déterminent les performances du programme, alors que les autres opérations sur le plateau restent très rapides.
 
 \section{\textbf{Conclusion}}
 
@@ -410,6 +395,8 @@ Nous avons également étudié l'algorithme A*, mais nous n'en n'avons pas eu l'
 Pour aller plus loin, plusieurs améliorations sont possibles pour enrichir le projet. Par exemple, on pourrait ajouter la règle du don de pion afin d'éviter certaines fins de partie trop rapides et de les rendre plus intéressantes. Du côté de l'intelligence artificielle, on pourrait  améliorer son efficacité en optimisant certaines parties du code, par exemple en organisant les coups explorés ou en évitant de recalculer certaines situations déjà rencontrées. Cela permettrait de rendre l'IA un peu plus rapide et plus efficace sans changer complètement son fonctionnement.
 
 Ce projet nous a permis de construire une base solide d'un jeu complet en C, et il reste encore plusieurs pistes simples d'amélioration pour le rendre plus fluide et plus intéressant à jouer.
+
+\newpage
 
 \section{\textbf{Annexes}}
 \medskip
@@ -460,7 +447,7 @@ Ce projet nous a permis de construire une base solide d'un jeu complet en C, et 
 
 \medskip
 
-\subsection{Algorithme Alpha-Béta}
+\subsection{Algorithme Alpha-Bêta}
 \label{alg:alphabeta}
 
 \begin{algorithm}[H]
@@ -500,15 +487,14 @@ Ce projet nous a permis de construire une base solide d'un jeu complet en C, et 
                 $\beta$ $\leftarrow$ score\;
                 bestMove $\leftarrow$ $m$\;
                 \Si{$\alpha$ $\ge$ $\beta$}{
-                    \textbf{break} \tcc*[r]{Coupure Béta}
+                    \textbf{break} \tcc*[r]{Coupure Bêta}
                 } 
             } 
         } 
         \Retour $\beta$\;
     }
 }
-\caption{Algorithme Alpha-Béta}
+\caption{Algorithme Alpha-Bêta}
 \end{algorithm}
 
 \end{document}
-
