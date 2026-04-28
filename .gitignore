@@ -1,0 +1,15 @@
+# LaTeX (Fichiers de compilation)
+*.aux
+*.log
+*.toc
+*.nav
+*.snm
+*.out
+*.synctex.gz
+*.fdb_latexmk
+*.fls
+
+# Exécutables C
+*.exe
+othello
+save.bin
