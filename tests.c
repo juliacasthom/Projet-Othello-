@@ -59,18 +59,15 @@ void test_alphabeta_simple() {
     p[7][7] = VIDE; // Autre coin (Très fort)
     p[1][1] = VIDE; // Case X (Très dangereuse)
 
-    // 3. TRÈS IMPORTANT : Placer des pions NOIRS pour rendre les coups valides
-    // Pour que Noir puisse jouer en (0,0), il faut un Blanc en (0,1) et un Noir en (0,2)
+    // 3. Placer des pions NOIRS pour rendre les coups valides
     p[0][1] = BLANC;
-    p[0][2] = NOIR;  // Ancre pour le coin haut-gauche
+    p[0][2] = NOIR;
     
-    // Pour que Noir puisse jouer en (7,7), il faut un Blanc en (6,7) et un Noir en (5,7)
     p[6][7] = BLANC;
-    p[5][7] = NOIR;  // Ancre pour le coin bas-droite
+    p[5][7] = NOIR;
 
-    // Pour que Noir puisse jouer en (1,1), il faut un Blanc en (2,2) et un Noir en (3,3)
     p[2][2] = BLANC;
-    p[3][3] = NOIR;  // Ancre pour la case dangereuse
+    p[3][3] = NOIR;
 
     printf("Test Alpha-Beta en cours...\n");
     
@@ -80,7 +77,7 @@ void test_alphabeta_simple() {
     printf("IA a choisi : Ligne %d, Col %d\n", meilleur.ligne, meilleur.colonne);
 
     // L'IA doit impérativement choisir un des deux coins car ils valent +100
-    // et éviter (1,1) qui a un gros malus dans ta matrice.
+    // et éviter (1,1) qui a un gros malus dans la matrice.
     assert((meilleur.ligne == 0 && meilleur.colonne == 0) || (meilleur.ligne == 7 && meilleur.colonne == 7));
 
     printf("Test Alpha-Beta: OK\n");
@@ -94,7 +91,7 @@ int main() {
     test_evaluation_basique();
     test_stabilite_propagation();
     test_minimax_simple();
-    test_alphabeta_simple(); // Appel du nouveau test
+    test_alphabeta_simple();
     
     printf("--- TOUS LES TESTS ONT REUSSI ---\n");
     return 0;
