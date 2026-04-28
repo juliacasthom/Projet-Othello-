@@ -1,5 +1,5 @@
 \documentclass{beamer}
-\usetheme{Madrid} % Thème classique et propre
+\usetheme{Madrid}
 \usecolortheme{rose}
 
 \title{Projet Othello - L3 Informatique}
@@ -8,8 +8,94 @@
 
 \begin{document}
 
+% Slide 1
 \begin{frame}
-    \titlepage % Page de titre
+    \titlepage
+\end{frame}
+
+% Slide 2 : introduction
+\begin{frame}{Mode joueur contre joueur}
+\begin{itemize}
+    \item Première étape du projet
+    \item Jeu entièrement fonctionnel à 2 joueurs
+    \item Base pour toute l’IA (Minimax / Alpha-Bêta)
+\end{itemize}
+\end{frame}
+
+% Slide 3 : plateau
+\begin{frame}{Représentation du plateau}
+\begin{itemize}
+    \item Tableau 2D 8×8 en C (matrice logique)
+    \item Chaque case : vide / joueur 1 / joueur 2
+    \item Initialisation au centre (4 pions)
+    \item Début : joueur rose foncé
+\end{itemize}
+\end{frame}
+
+% Slide 4 : boucle principale
+\begin{frame}{Boucle principale du jeu}
+\begin{itemize}
+    \item Affichage du plateau
+    \item Saisie du joueur
+    \item Vérification du coup
+    \item Application si valide
+    \item Changement de joueur
+\end{itemize}
+\end{frame}
+
+% Slide 5 : validation des coups
+\begin{frame}{Validation d’un coup}
+\begin{itemize}
+    \item Règle du “sandwich”
+    \item Parcours des 8 directions
+    \item Case adjacente obligatoire adverse
+    \item Au moins une direction valide
+\end{itemize}
+\end{frame}
+
+% Slide 6 : application du coup
+\begin{frame}{Application d’un coup}
+\begin{itemize}
+    \item Placement du pion
+    \item Retour des pions capturés
+    \item Mise à jour du tableau
+\end{itemize}
+\end{frame}
+
+% Slide 7 : score et joueur
+\begin{frame}{Score et alternance}
+\begin{itemize}
+    \item Comptage des pions (double boucle)
+    \item Changement de joueur (rose foncé / rose clair)
+\end{itemize}
+\end{frame}
+
+% Slide 8 : fin de partie
+\begin{frame}{Fin de partie}
+\begin{itemize}
+    \item Aucun coup possible → skip joueur
+    \item Si aucun des deux joueurs ne peut jouer
+    \item Affichage du score final
+    \item Détermination du gagnant
+\end{itemize}
+\end{frame}
+
+% Slide 9 : complexité
+\begin{frame}{Complexité}
+\begin{itemize}
+    \item Plateau fixe 8×8
+    \item Opérations bornées
+    \item Complexité constante en pratique O(1)
+\end{itemize}
+\end{frame}
+
+% Slide 10 : conclusion
+\begin{frame}{Conclusion}
+\begin{itemize}
+    \item Base solide du projet
+    \item Jeu totalement fonctionnel
+    \item Préparation à l’intelligence artificielle
+\end{itemize}
 \end{frame}
 
 \end{document}
