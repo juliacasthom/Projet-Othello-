@@ -1,6 +1,18 @@
 \documentclass{beamer}
+
 \usetheme{Madrid}
-\usecolortheme{rose}
+\usepackage{graphicx}
+
+% Couleurs Othello
+\definecolor{DarkPink}{RGB}{231,84,128}
+\definecolor{LightPink}{RGB}{255,182,193}
+\definecolor{Wood}{RGB}{222,184,135}
+\definecolor{Border}{RGB}{101,67,33}
+
+\setbeamercolor{structure}{fg=DarkPink}
+\setbeamercolor{frametitle}{bg=LightPink, fg=black}
+
+\usepackage{tikz}
 
 \title{Projet Othello - L3 Informatique}
 \author{Julia, Andréa, Lucile, Sarah}
@@ -8,94 +20,320 @@
 
 \begin{document}
 
-% Slide 1
 \begin{frame}
-    \titlepage
+\titlepage
 \end{frame}
 
-% Slide 2 : introduction
+% joueur contre joueur
 \begin{frame}{Mode joueur contre joueur}
+\begin{columns}
+
+\begin{column}{0.5\textwidth}
 \begin{itemize}
-    \item Première étape du projet
-    \item Jeu entièrement fonctionnel à 2 joueurs
-    \item Base pour toute l’IA (Minimax / Alpha-Bêta)
+\item Deux joueurs humains
+\item Base du projet
+\item Nécessaire pour l’IA
 \end{itemize}
+\end{column}
+
+% IMAGE
+\begin{column}{0.5\textwidth}
+\centering
+\includegraphics[width=\textwidth]{J-vs-J.png}
+\end{column}
+
+\end{columns}
+
 \end{frame}
 
-% Slide 3 : plateau
-\begin{frame}{Représentation du plateau}
+%  PLATEAU 
+\begin{frame}{Plateau 8×8}
+
+\centering
+
+\begin{tikzpicture}[scale=0.5]
+\draw (0,0) grid (4,4);
+
+% centre
+\fill[DarkPink] (1.5,1.5) circle (0.2);
+\fill[DarkPink] (2.5,2.5) circle (0.2);
+\fill[LightPink] (1.5,2.5) circle (0.2);
+\fill[LightPink] (2.5,1.5) circle (0.2);
+
+\node at (2,-0.8) {Initialisation};
+\end{tikzpicture}
+
+\vspace{0.3cm}
+
 \begin{itemize}
-    \item Tableau 2D 8×8 en C (matrice logique)
-    \item Chaque case : vide / joueur 1 / joueur 2
-    \item Initialisation au centre (4 pions)
-    \item Début : joueur rose foncé
+\item Matrice 2D
+\item 3 états (vide / rose foncé / rose clair)
 \end{itemize}
+
 \end{frame}
 
-% Slide 4 : boucle principale
-\begin{frame}{Boucle principale du jeu}
-\begin{itemize}
-    \item Affichage du plateau
-    \item Saisie du joueur
-    \item Vérification du coup
-    \item Application si valide
-    \item Changement de joueur
-\end{itemize}
+% BOUCLE 
+\begin{frame}{Boucle du jeu}
+
+\centering
+
+\begin{tikzpicture}[node distance=1.2cm]
+
+\node (a) [draw, rounded corners, fill=LightPink] {Affichage};
+\node (b) [below of=a, draw, rounded corners, fill=LightPink] {Entrée joueur};
+\node (c) [below of=b, draw, rounded corners, fill=LightPink] {Validation};
+\node (d) [below of=c, draw, rounded corners, fill=LightPink] {Application};
+\node (e) [below of=d, draw, rounded corners, fill=LightPink] {Changement joueur};
+
+\draw[->] (a) -- (b);
+\draw[->] (b) -- (c);
+\draw[->] (c) -- (d);
+\draw[->] (d) -- (e);
+\draw[->] (e.east) -- ++(1,0) |- (a.east);
+
+\end{tikzpicture}
+
 \end{frame}
 
-% Slide 5 : validation des coups
-\begin{frame}{Validation d’un coup}
+% DIRECTIONS 
+\begin{frame}{Validation : 8 directions}
+
+\centering
+
+\begin{tikzpicture}[scale=0.85]
+\draw (0,0) grid (3,3);
+
+\fill[DarkPink] (1.5,1.5) circle (0.15);
+
+% directions
+\draw[->, thick] (1.5,1.5) -- (1.5,2.7);
+\draw[->, thick] (1.5,1.5) -- (1.5,0.3);
+\draw[->, thick] (1.5,1.5) -- (2.7,1.5);
+\draw[->, thick] (1.5,1.5) -- (0.3,1.5);
+
+\draw[->, thick] (1.5,1.5) -- (2.7,2.7);
+\draw[->, thick] (1.5,1.5) -- (0.3,0.3);
+\draw[->, thick] (1.5,1.5) -- (2.7,0.3);
+\draw[->, thick] (1.5,1.5) -- (0.3,2.7);
+
+\node at (1.5,-0.8) {Scan directions};
+\end{tikzpicture}
+
+\vspace{0.2cm}
+
 \begin{itemize}
-    \item Règle du “sandwich”
-    \item Parcours des 8 directions
-    \item Case adjacente obligatoire adverse
-    \item Au moins une direction valide
+\item 8 directions testées
+\item Recherche “sandwich”
 \end{itemize}
+
 \end{frame}
 
-% Slide 6 : application du coup
-\begin{frame}{Application d’un coup}
+%SCHEMA VALIDATION 
+\begin{frame}{Validation d’un coup (exemple)}
+
+\centering
+
+\begin{tikzpicture}[scale=0.8]
+
+% grille
+\draw (0,0) grid (5,1);
+
+% pions
+\fill[DarkPink] (0.5,0.5) circle (0.3);   % joueur
+\fill[LightPink] (1.5,0.5) circle (0.3);  % adversaire
+\fill[LightPink] (2.5,0.5) circle (0.3);  % adversaire
+\fill[LightPink] (3.5,0.5) circle (0.3);  % adversaire
+
+% case jouée (vide → futur coup)
+\draw[thick, dashed] (4,0) rectangle (5,1);
+\node at (4.5,0.5) {?};
+
+% flèche
+\draw[->, thick] (4.5,1.2) -- (3.5,1.2);
+
+% annotation
+\node at (2.5,-0.8) {On encadre les pions adverses};
+
+\end{tikzpicture}
+
+\vspace{0.4cm}
+
 \begin{itemize}
-    \item Placement du pion
-    \item Retour des pions capturés
-    \item Mise à jour du tableau
+\item Case voisine adverse obligatoire
+\item On avance dans la direction
+\item On doit retrouver notre pion
 \end{itemize}
+
 \end{frame}
 
-% Slide 7 : score et joueur
-\begin{frame}{Score et alternance}
-\begin{itemize}
-    \item Comptage des pions (double boucle)
-    \item Changement de joueur (rose foncé / rose clair)
-\end{itemize}
+% SANDWICH
+\begin{frame}{Principe de capture}
+
+\centering
+
+\textbf{Avant}
+
+\vspace{0.2cm}
+
+\begin{tikzpicture}[scale=1]
+
+\draw (0,0) rectangle (1,1);
+\draw (1,0) rectangle (2,1);
+\draw (2,0) rectangle (3,1);
+\draw (3,0) rectangle (4,1);
+\draw (4,0) rectangle (5,1);
+
+\fill[DarkPink] (0.5,0.5) circle (0.3);
+\fill[LightPink] (1.5,0.5) circle (0.3);
+\fill[LightPink] (2.5,0.5) circle (0.3);
+\fill[LightPink] (3.5,0.5) circle (0.3);
+\fill[DarkPink] (4.5,0.5) circle (0.3);
+
+\node at (2.5,-0.7) {Encadrement};
+
+\end{tikzpicture}
+
+\vspace{0.5cm}
+
+\textbf{Après}
+
+\vspace{0.2cm}
+
+\begin{tikzpicture}[scale=1]
+
+\draw (0,0) rectangle (1,1);
+\draw (1,0) rectangle (2,1);
+\draw (2,0) rectangle (3,1);
+\draw (3,0) rectangle (4,1);
+\draw (4,0) rectangle (5,1);
+
+\fill[DarkPink] (0.5,0.5) circle (0.3);
+\fill[DarkPink] (1.5,0.5) circle (0.3);
+\fill[DarkPink] (2.5,0.5) circle (0.3);
+\fill[DarkPink] (3.5,0.5) circle (0.3);
+\fill[DarkPink] (4.5,0.5) circle (0.3);
+
+\node at (2.5,-0.7) {Changement de couleur};
+
+\end{tikzpicture}
+
 \end{frame}
 
-% Slide 8 : fin de partie
-\begin{frame}{Fin de partie}
+
+%  SCORE 
+\begin{frame}{Mise à jour du score}
+
+\centering
+\begin{tikzpicture}
+
+\node[draw, rounded corners, fill=DarkPink] (a) {Compteur rose foncé };
+\node[below of=a, node distance=1cm, draw, rounded corners, fill=LightPink] (b) {Compteur rose clair };
+
+\end{tikzpicture}
+
+\vspace{0.3cm}
+
 \begin{itemize}
-    \item Aucun coup possible → skip joueur
-    \item Si aucun des deux joueurs ne peut jouer
-    \item Affichage du score final
-    \item Détermination du gagnant
+\item Double boucle sur la matrice 8×8
+\item Comptage des pions
+\item Complexité constante
 \end{itemize}
+
 \end{frame}
 
-% Slide 9 : complexité
+% CHANGEMENT JOUEUR
+\begin{frame}{Changement de joueur / Fin de partie}
+
+\centering
+
+\begin{tikzpicture}
+
+\node (a) [draw, rounded corners, fill=LightPink] {Joueur actuel};
+\node (b) [right of=a, xshift=2.5cm, draw, rounded corners] {On inverse};
+\node (c) [right of=b, xshift=2.5cm, draw, rounded corners, fill=LightPink] {Autre joueur};
+
+\draw[->, thick] (a) -- (b);
+\draw[->, thick] (b) -- (c);
+
+\end{tikzpicture}
+
+\vspace{0.4cm}
+
+\begin{tikzpicture}[node distance=1.2cm]
+
+\node (d) [draw, rounded corners, fill=LightPink] {Aucun coup possible ?};
+\node (e) [below of=d, draw, rounded corners] {Passer au joueur adverse};
+\node (f) [below of=e, draw, rounded corners, fill=LightPink] {Les deux bloqués ?};
+\node (g) [below of=f, draw, rounded corners] {Fin de partie};
+
+\draw[->] (d) -- (e);
+\draw[->] (e) -- (f);
+\draw[->] (f) -- (g);
+
+\end{tikzpicture}
+
+\vspace{0.3cm}
+
+\begin{itemize}
+\item Comptage final des pions
+\item Comparaison des scores
+\item Détermination du gagnant
+\end{itemize}
+
+\end{frame}
+
+%  COMPLEXITE 
 \begin{frame}{Complexité}
+
+\centering
+
+\begin{tikzpicture}
+
+\node (a) [draw, rounded corners, fill=LightPink] {Plateau 8×8};
+\node (b) [right of=a, xshift=2.5cm, draw, rounded corners, fill=DarkPink] {Boucles i,j};
+\node (c) [right of=b, xshift=2.5cm, draw, rounded corners, fill=LightPink] {Temps constant};
+
+\draw[->, thick] (a) -- (b);
+\draw[->, thick] (b) -- (c);
+
+\end{tikzpicture}
+
+\vspace{0.4cm}
+
 \begin{itemize}
-    \item Plateau fixe 8×8
-    \item Opérations bornées
-    \item Complexité constante en pratique O(1)
+\item Taille fixe du plateau
+\item Parcours toujours limité
+\item Complexité en pratique : $O(1)$
 \end{itemize}
+
 \end{frame}
 
-% Slide 10 : conclusion
-\begin{frame}{Conclusion}
-\begin{itemize}
-    \item Base solide du projet
-    \item Jeu totalement fonctionnel
-    \item Préparation à l’intelligence artificielle
-\end{itemize}
+%  CONCLUSION 
+\begin{frame}{Conclusion Mode joueur contre joueur}
+
+\begin{tikzpicture}
+
+\node (a) [draw, rounded corners, fill=LightPink, minimum width=3cm, minimum height=1cm] 
+{Joueur vs Joueur};
+
+\node (b) [right of=a, xshift=3.5cm, fill=DarkPink, draw, rounded corners, minimum width=3cm, minimum height=1cm] 
+{Fiabilité du moteur de jeu};
+
+\node (c) [right of=b, xshift=3.5cm, fill=LightPink, draw, rounded corners, minimum width=3cm, minimum height=1cm] 
+{Joueur vs IA};
+
+\draw[->, very thick] (a) -- node[above]{} (b);
+\draw[->, very thick] (b) -- node[above]{} (c);
+
+\end{tikzpicture}
+
+\vspace{0.1cm}
+\centering
+\vspace{0.3cm}
+\includegraphics[width=0.35\textwidth]{ccls.png}
+
+
 \end{frame}
 
 \end{document}
+
