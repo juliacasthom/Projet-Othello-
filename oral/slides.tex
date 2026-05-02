@@ -1,7 +1,16 @@
-\documentclass{beamer}
-
-\usetheme{Madrid}
+\documentclass[10pt, aspectratio=169]{beamer}
+\usepackage[french]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
 \usepackage{graphicx}
+\usepackage{helvet}
+\usepackage{tikz}
+\usetikzlibrary{positioning}
+\usepackage{colortbl}
+
+% Configuration du sous-titre dans la bande
+\setbeamercolor{framesubtitle}{fg=white!80}
+\setbeamerfont{framesubtitle}{size=\small, series=\mdseries}
 
 % Couleurs Othello
 \definecolor{DarkPink}{RGB}{231,84,128}
@@ -12,17 +21,54 @@
 \setbeamercolor{structure}{fg=DarkPink}
 \setbeamercolor{frametitle}{bg=LightPink, fg=black}
 
-\usepackage{tikz}
+% --- PERSONNALISATION DU THÈME ---
+\usetheme{Boadilla}
+\useinnertheme{rounded}
+\setbeamertemplate{navigation symbols}{}
+
+% Couleurs principales
+\setbeamercolor{palette primary}{bg=DarkPink, fg=white}
+\setbeamercolor{palette secondary}{bg=Wood, fg=Border}
+\setbeamercolor{palette tertiary}{bg=Border, fg=white}
+\setbeamercolor{titlelike}{parent=palette primary, fg=DarkPink}
+\setbeamercolor{structure}{fg=DarkPink}
+
+% Fond de la slide
+\setbeamercolor{background canvas}{bg=Wood!15}
+
+% Style des blocs
+\setbeamercolor{block title}{bg=DarkPink, fg=white}
+\setbeamercolor{block body}{bg=white, fg=black}
 
 \title{Projet Othello - L3 Informatique}
 \author{Julia, Andréa, Lucile, Sarah}
 \date{Mai 2026}
 
+\setbeamertemplate{frametitle}{
+    \nointerlineskip
+    \begin{beamercolorbox}[sep=0.25cm, wd=\paperwidth, ht=1.2cm]{palette primary}
+        \textbf{\insertframetitle} \hfill {\small\mdseries\insertframesubtitle}
+    \end{beamercolorbox}
+}
+
+\setbeamercolor{title}{fg=white, bg=DarkPink}   
+\setbeamerfont{title}{size=\Large, series=\bfseries}
+
 \begin{document}
 
-\begin{frame}
-\titlepage
+% --- PAGE DE TITRE ---
+{\setbeamercolor{background canvas}{bg=Wood} 
+\begin{frame}[plain]
+    \titlepage
+    \centering
+    \begin{tikzpicture}
+        \fill[DarkPink] (0,0) circle (0.3);
+        \fill[LightPink] (1,0) circle (0.3);
+        \fill[DarkPink] (2,0) circle (0.3);
+        \fill[LightPink] (3,0) circle (0.3);
+    \end{tikzpicture}
 \end{frame}
+}
 
 % joueur contre joueur
 \begin{frame}{Mode joueur contre joueur}
@@ -310,30 +356,342 @@
 
 %  CONCLUSION 
 \begin{frame}{Conclusion Mode joueur contre joueur}
+    \centering
 
 \begin{tikzpicture}
 
-\node (a) [draw, rounded corners, fill=LightPink, minimum width=3cm, minimum height=1cm] 
-{Joueur vs Joueur};
+    \node (a) [draw, rounded corners, fill=LightPink, minimum width=3cm, minimum height=1cm] 
+    {Joueur vs Joueur};
 
-\node (b) [right of=a, xshift=3.5cm, fill=DarkPink, draw, rounded corners, minimum width=3cm, minimum height=1cm] 
-{Fiabilité du moteur de jeu};
+    \node (b) [right of=a, xshift=3.5cm, fill=DarkPink, draw, rounded corners, minimum width=3cm, minimum height=1cm] 
+    {Fiabilité du moteur de jeu};
 
-\node (c) [right of=b, xshift=3.5cm, fill=LightPink, draw, rounded corners, minimum width=3cm, minimum height=1cm] 
-{Joueur vs IA};
+    \node (c) [right of=b, xshift=3.5cm, fill=LightPink, draw, rounded corners, minimum width=3cm, minimum height=1cm] 
+    {Joueur vs IA};
 
-\draw[->, very thick] (a) -- node[above]{} (b);
-\draw[->, very thick] (b) -- node[above]{} (c);
+    \draw[->, very thick] (a) -- node[above]{} (b);
+    \draw[->, very thick] (b) -- node[above]{} (c);
 
 \end{tikzpicture}
 
 \vspace{0.1cm}
 \centering
 \vspace{0.3cm}
-\includegraphics[width=0.35\textwidth]{ccls.png}
+\includegraphics[width=0.3\textwidth]{ccls.png}
 
 
 \end{frame}
+
+
+%Slides Lucile
+
+% --- SLIDE DE TRANSITION : DÉBUT DE LA NV PARTIE ---
+\begin{frame}
+    \centering
+    \begin{beamercolorbox}[sep=10pt,center,shadow=true,rounded=true]{title}
+        \Huge \textbf{L'Intelligence Artificielle}
+    \end{beamercolorbox}
+    
+    \vspace{0.6cm}
+    {\Large \textcolor{Border}{Mode : Joueur contre IA}}
+
+    \vspace{1.2cm}
+    \begin{tikzpicture}
+        \fill[DarkPink] (0,0) circle (0.3);
+        \fill[LightPink] (1,0) circle (0.3);
+        \fill[DarkPink] (2,0) circle (0.3);
+        \fill[LightPink] (3,0) circle (0.3);
+    \end{tikzpicture}
+\end{frame}
+
+
+% --- SLIDE 1 : MINIMAX : Arbre ---
+\begin{frame}{L'Algorithme Minimax}
+    \framesubtitle{Simulation de l'arbre de décision}
+    \centering
+    \begin{tikzpicture}[
+        scale=0.9,
+        % Styles des nœuds (Cercles pour les joueurs, Rectangles pour les scores)
+        node/.style={circle, draw=Border, line width=1pt, minimum size=6mm},
+        max/.style={node, fill=DarkPink, text=white, font=\bfseries\tiny},
+        min/.style={node, fill=LightPink, text=Border, font=\bfseries\tiny},
+        leaf/.style={rectangle, draw=Border, fill=white, inner sep=2pt, font=\tiny\bfseries},
+        label/.style={draw=none, fill=none, font=\footnotesize\bfseries, anchor=east},
+        connection/.style={draw=Border, line width=0.8pt}
+    ]
+
+        % --- ÉTIQUETTES À GAUCHE (Alignées sur les niveaux Y) ---
+        \node[label, text=DarkPink] at (-5, 0) {IA (MAX) :};
+        \node[label, text=Border] at (-5, -1.2) {Humain (MIN) :};
+        \node[label, text=DarkPink] at (-5, -2.4) {IA (MAX) :};
+        \node[label, text=Border] at (-5, -3.6) {Humain (MIN) :};
+        \node[label, text=DarkPink] at (-5, -4.8) {IA (MAX) :};
+        \node[label, text=Border] at (-5, -5.8) {Horizon (Éval.) :};
+
+        % --- L'ARBRE ---
+        
+        % Niveau 0 : Racine
+        \node[max] (R) at (0,0) {IA};
+
+        % Niveau 1
+        \node[min] (L1_1) at (-2.5,-1.2) {H};
+        \node[min] (L1_2) at (0.2,-1.2) {H};
+        \node[min] (L1_3) at (2.5,-1.2) {H};
+        \draw[connection] (R) -- (L1_1);
+        \draw[connection] (R) -- (L1_2);
+        \draw[connection] (R) -- (L1_3);
+
+        % Niveau 2
+        \node[max] (L2_1) at (-3.5,-2.4) {IA};
+        \node[max] (L2_2) at (-1.5,-2.4) {IA};
+        \node[max] (L2_3) at (1.8,-2.4) {IA};
+        \node[max] (L2_4) at (3.2,-2.4) {IA};
+        \draw[connection] (L1_1) -- (L2_1);
+        \draw[connection] (L1_1) -- (L2_2);
+        \draw[connection] (L1_3) -- (L2_3);
+        \draw[connection] (L1_3) -- (L2_4);
+        
+        % Pointillés pour la branche du milieu (montrer que c'est coupé)
+        \node at (0.2,-1.8) {\color{Border}$\vdots$};
+        \node[max, dashed, opacity=0.5] at (0.2,-2.4) {$\dots$};
+
+        % Niveau 3
+        \node[min] (L3_1) at (-3.8,-3.6) {H};
+        \node[min] (L3_2) at (-2.8,-3.6) {H};
+        \node[min] (L3_3) at (2.5,-3.6) {H};
+        \draw[connection] (L2_1) -- (L3_1);
+        \draw[connection] (L2_2) -- (L3_2);
+        \draw[connection] (L2_4) -- (L3_3);
+
+        % Niveau 4 (On descend encore pour montrer la profondeur de 5)
+        \node[max] (L4_1) at (-4.2,-4.8) {IA};
+        \node[max] (L4_2) at (-3.4,-4.8) {IA};
+        \node[max] (L4_3) at (2.0,-4.8) {IA};
+        \node[max] (L4_4) at (3.0,-4.8) {IA};
+        \draw[connection] (L3_1) -- (L4_1);
+        \draw[connection] (L3_1) -- (L4_2);
+        \draw[connection] (L3_3) -- (L4_3);
+        \draw[connection] (L3_3) -- (L4_4);
+
+        % Niveau 5 : Feuilles (Scores)
+        \node[leaf] at (-4.2,-5.8) {+50};
+        \node[leaf] at (-3.4,-5.8) {+10};
+        \node[leaf] at (2.0,-5.8) {-100};
+        \node[leaf] at (3.0,-5.8) {-20};
+        \draw[connection] (L4_1) -- (-4.2,-5.5);
+        \draw[connection] (L4_2) -- (-3.4,-5.5);
+        \draw[connection] (L4_3) -- (2.0,-5.5);
+        \draw[connection] (L4_4) -- (3.0,-5.5);
+
+        % --- AJOUT DES "3 PETITS POINTS" (Branches non explorées) ---
+        \node[text=Border] at (-1.5, -3) {$\dots$};
+        \node[text=Border] at (1.8, -3) {$\dots$};
+        \node[text=Border] at (0, -4.5) {$\dots$};
+
+    \end{tikzpicture}
+\end{frame}
+
+% --- SLIDE 2 : POSITIONNEMENT ---
+\begin{frame}{Fonction d'évaluation}
+    \framesubtitle{1. Le Positionnement : Matrice de Poids}
+    \begin{columns}[T]
+        \begin{column}{0.5\textwidth}
+            \begin{itemize}
+                \vspace{0.4cm}
+                \item \textbf{Principe :} Attribuer une valeur fixe à chaque case du plateau.
+                \vspace{0.4cm}
+                \item \textbf{Points Forts (+100) :} Les coins sont définitifs et servent d'ancres.
+                \vspace{0.4cm}
+                \item \textbf{Points Faibles (-50) :} Les cases adjacentes aux coins (cases X) risquent de "donner" le coin à l'adversaire.
+            \end{itemize}
+        \end{column}
+        
+        \begin{column}{0.5\textwidth}
+            \centering
+            \includegraphics[width=0.85\textwidth]{plateau_poids.png}
+            \vspace{0.2cm}
+            \small{\textcolor{Border}{Hiérarchie des cases stratégiques}}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+% --- SLIDE 3 : MOBILITÉ ---
+\begin{frame}{Fonction d'évaluation}
+    \framesubtitle{2. La Mobilité}
+    \begin{columns}[T]
+        % Colonne de gauche : Ton texte direct
+        \begin{column}{0.7\textwidth}
+            \vspace{0.1cm}
+            \begin{itemize}
+                \item \textbf{Définition :} C'est le nombre de coups valides qu'un joueur peut jouer à son tour.
+                \vspace{0.5cm}
+                \begin{block}{Calcul du score}
+                    \centering
+                    \vspace{0.2cm}
+                    \normalsize \textbf{$Score = MesCoupsPossibles - CoupsAdversaire$} \\
+                    \vspace{0.1cm}
+                    \footnotesize \textit{(Différence des mobilités)}
+                \end{block}
+                \vspace{0.5cm}
+                \item \textbf{L'objectif :} « Étouffer » l'adversaire pour le forcer à jouer sur les cases à malus (adjacentes aux coins).
+            \end{itemize}
+        \end{column}
+
+    \end{columns}
+\end{frame}
+
+% --- SLIDE 4 : STABILITÉ ---
+\begin{frame}{Fonction d'évaluation}
+    \framesubtitle{3. La Stabilité}
+    
+    \begin{itemize}
+        \item \textbf{Définition :} Un pion est dit « stable » s'il est mathématiquement impossible pour l'adversaire de le retourner d'ici la fin de la partie.
+        \item \textbf{La règle :} La stabilité se propage à partir des coins vers le long des bords.
+    \end{itemize}
+
+    \vspace{0.5cm}
+
+    \begin{columns}[t]
+        % Cas Stable
+        \begin{column}{0.45\textwidth}
+            \centering
+            \textcolor{DarkPink}{\textbf{Cas Stable (Ancré)}}\\[0.2cm]
+            \begin{tikzpicture}[scale=0.6]
+                \draw[fill=Wood!40, draw=Border, thick] (0,0) rectangle (3,3);
+                \draw[Border!50] (0,1)--(3,1) (0,2)--(3,2) (1,0)--(1,3) (2,0)--(2,3);
+                
+                % Pions stables
+                \fill[DarkPink] (0.5,2.5) circle (0.35); % Coin
+                \fill[DarkPink] (1.5,2.5) circle (0.35); % Stable car collé
+                \fill[DarkPink] (2.5,2.5) circle (0.35); % Stable car collé
+                
+                \draw[->, >=stealth, DarkPink, thick] (0.5,2.5) -- (2.2,2.5);
+                \node at (1.5, -0.6) {\scriptsize \textit{Propagation depuis le coin}};
+            \end{tikzpicture}
+        \end{column}
+
+        % Cas Instable
+        \begin{column}{0.45\textwidth}
+            \centering
+            \textcolor{red!70}{\textbf{Cas Instable (Vulnérable)}}\\[0.2cm]
+            \begin{tikzpicture}[scale=0.6]
+                \draw[fill=Wood!40, draw=Border, thick] (0,0) rectangle (3,3);
+                \draw[Border!50] (0,1)--(3,1) (0,2)--(3,2) (1,0)--(1,3) (2,0)--(2,3);
+                
+                % Pions instables
+                \fill[DarkPink] (1.5,2.5) circle (0.35); % Pion seul au bord
+                \fill[LightPink] (2.5,2.5) circle (0.35); % Adversaire à côté
+                
+                % Flèche de capture possible par l'humain
+                \draw[<- , >=stealth, Border, thick] (0.8,2.5) -- (0.2,2.5);
+                \node[draw=red, fill=white, font=\tiny] at (0.5,2.5) {VIDE};
+                
+                \node at (1.5, -0.6) {\scriptsize \textit{Risque de capture (sandwich)}};
+            \end{tikzpicture}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+% --- SLIDE 5 : LE MATÉRIEL ---
+\begin{frame}{Fonction d'évaluation}
+    \framesubtitle{4. Le Matériel : Nombre de pions}
+
+    \begin{columns}[T]
+        \begin{column}{0.45\textwidth}
+            \textbf{En début de partie :}
+            \vspace{0.2cm}
+            \begin{itemize}
+                \item \textbf{Piège :} Trop de pions créent des « cibles » faciles pour l'adversaire.
+                \item \textbf{Risque :} Perdre en mobilité.
+                \item \textbf{IA :} Donne un poids \textbf{négligeable} au score (Poids 1).
+            \end{itemize}
+        \end{column}
+
+        \begin{column}{0.45\textwidth}
+            \textbf{En fin de partie :}
+            \vspace{0.2cm}
+            \begin{itemize}
+                \item \textbf{Changement :} L'IA prend en compte le nombre de pions restant dès qu'il reste moins de 10 cases vides.
+                \item \textbf{IA :} Le nombre de pions devient un critère \textbf{important} (Poids 100).
+            \end{itemize}
+        \end{column}
+    \end{columns}
+
+    \vspace{0.8cm}
+
+    \centering
+    \small
+    \begin{tabular}{|l|c|l|}
+        \hline
+        \rowcolor{Wood!40} \textbf{Phase de jeu} & \textbf{Coefficient} & \textbf{Stratégie de l'IA} \\ \hline
+        Début / Milieu & \textbf{1} & Privilégier le placement et la mobilité \\ \hline
+        \rowcolor{DarkPink!20} \textbf{Fin (10 cases vides)} & \textbf{100} & \textbf{Priorité au nombre de pions} \\ \hline
+    \end{tabular}
+\end{frame}
+
+% --- SLIDE 6 : LA DÉCISION FINALE ---
+\begin{frame}{La Prise de Décision}
+    \framesubtitle{Choisir le meilleur coup}
+
+    \vspace{0.3cm}
+    \begin{itemize}
+        \item \textbf{Lister et Trier :} Identifier les coups légaux et privilégier les cases fortes (coins).
+        \vspace{0.8cm}
+        \item \textbf{Simuler :} Tester chaque option sur une copie virtuelle du plateau.
+        \vspace{0.8cm}
+        \item \textbf{Anticiper :} Utiliser le \textbf{Minimax} pour prédire le score 5 coups plus tard.
+        \vspace{0.8cm}
+        \item \textbf{Sélectionner :} Retenir le coup qui garantit la meilleure note finale.
+    \end{itemize}
+\end{frame}
+
+% --- SLIDE 7 : COMPLEXITÉ ---
+\begin{frame}{Analyse de la complexité}
+    \framesubtitle{Le coût de l'anticipation}
+
+    \begin{itemize}
+        \item \textbf{Complexité Minimax : $O(b^d)$}
+    \end{itemize}
+
+    \vspace{0.4cm}
+
+    \begin{columns}[T]
+        \begin{column}{0.55\textwidth}
+            \begin{block}{Les paramètres}
+                \begin{itemize}
+                    \item \textbf{$b$} : nombre moyen de coups possibles ($\approx 10$).
+                    \item \textbf{$d$} : profondeur de recherche ($5$).
+                \end{itemize}
+            \end{block}
+        \end{column}
+
+        \begin{column}{0.4\textwidth}
+            \begin{block}{Croissance exponentielle}
+                \begin{itemize}
+                    \item Pour $d=5$ : \textbf{100 000} positions.
+                    \item Pour $d=6$ : \textbf{1 000 000} positions.
+                    \item Pour $d=10$ : \textbf{10 milliards}.
+                \end{itemize}
+            \end{block}
+        \end{column}
+    \end{columns}
+
+    \vspace{1cm}
+    \centering
+    \textcolor{DarkPink}{\textbf{Constat :}} Plus on veut une IA intelligente ($d$ élevé), plus le temps de calcul explose.
+\end{frame}
+
+% --- SLIDE DE TRANSITION ---
+\begin{frame}
+    \centering
+    \Large \textcolor{DarkPink}{\textbf{Défi : L'explosion combinatoire}} \\
+    \vspace{0.5cm}
+    \normalsize Comment augmenter les performances de notre ia sans ralentir le jeu ? \\
+    \vspace{0.8cm}
+    $\rightarrow$ \textbf{L'élagage Alpha-Bêta}
+\end{frame}
+
+%Fin slides Lucile
 
 \end{document}
 
