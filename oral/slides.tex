@@ -5,6 +5,10 @@
 \usepackage{graphicx}
 \usepackage{helvet}
 \usepackage{tikz}
+\usepackage{lmodern}
+\usepackage{ae,aecompl}
+\usepackage{textcomp}
+\usepackage{microtype}
 \usetikzlibrary{positioning}
 \usepackage{colortbl}
 
@@ -75,24 +79,24 @@
 \begin{columns}
 
 \begin{column}{0.5\textwidth}
+\begin{block}{Mode joueur contre joueur}
 \begin{itemize}
 \item Deux joueurs humains
 \item Base du projet
 \item Nécessaire pour l’IA
 \end{itemize}
+\end{block}
 \end{column}
 
-% IMAGE
 \begin{column}{0.5\textwidth}
 \centering
 \includegraphics[width=\textwidth]{J-vs-J.png}
 \end{column}
 
 \end{columns}
-
 \end{frame}
 
-%  PLATEAU 
+% PLATEAU
 \begin{frame}{Plateau 8×8}
 
 \centering
@@ -100,7 +104,6 @@
 \begin{tikzpicture}[scale=0.5]
 \draw (0,0) grid (4,4);
 
-% centre
 \fill[DarkPink] (1.5,1.5) circle (0.2);
 \fill[DarkPink] (2.5,2.5) circle (0.2);
 \fill[LightPink] (1.5,2.5) circle (0.2);
@@ -111,14 +114,16 @@
 
 \vspace{0.3cm}
 
+\begin{block}{Plateau}
 \begin{itemize}
 \item Matrice 2D
 \item 3 états (vide / rose foncé / rose clair)
 \end{itemize}
+\end{block}
 
 \end{frame}
 
-% BOUCLE 
+% BOUCLE
 \begin{frame}{Boucle du jeu}
 
 \centering
@@ -141,7 +146,7 @@
 
 \end{frame}
 
-% DIRECTIONS 
+% DIRECTIONS
 \begin{frame}{Validation : 8 directions}
 
 \centering
@@ -151,7 +156,6 @@
 
 \fill[DarkPink] (1.5,1.5) circle (0.15);
 
-% directions
 \draw[->, thick] (1.5,1.5) -- (1.5,2.7);
 \draw[->, thick] (1.5,1.5) -- (1.5,0.3);
 \draw[->, thick] (1.5,1.5) -- (2.7,1.5);
@@ -167,48 +171,47 @@
 
 \vspace{0.2cm}
 
+\begin{block}{Validation}
 \begin{itemize}
 \item 8 directions testées
 \item Recherche “sandwich”
 \end{itemize}
+\end{block}
 
 \end{frame}
 
-%SCHEMA VALIDATION 
+% VALIDATION COUP
 \begin{frame}{Validation d’un coup (exemple)}
 
 \centering
 
 \begin{tikzpicture}[scale=0.8]
 
-% grille
 \draw (0,0) grid (5,1);
 
-% pions
-\fill[DarkPink] (0.5,0.5) circle (0.3);   % joueur
-\fill[LightPink] (1.5,0.5) circle (0.3);  % adversaire
-\fill[LightPink] (2.5,0.5) circle (0.3);  % adversaire
-\fill[LightPink] (3.5,0.5) circle (0.3);  % adversaire
+\fill[DarkPink] (0.5,0.5) circle (0.3);
+\fill[LightPink] (1.5,0.5) circle (0.3);
+\fill[LightPink] (2.5,0.5) circle (0.3);
+\fill[LightPink] (3.5,0.5) circle (0.3);
 
-% case jouée (vide → futur coup)
 \draw[thick, dashed] (4,0) rectangle (5,1);
 \node at (4.5,0.5) {?};
 
-% flèche
 \draw[->, thick] (4.5,1.2) -- (3.5,1.2);
 
-% annotation
 \node at (2.5,-0.8) {On encadre les pions adverses};
 
 \end{tikzpicture}
 
 \vspace{0.4cm}
 
+\begin{block}{Validation}
 \begin{itemize}
 \item Case voisine adverse obligatoire
 \item On avance dans la direction
 \item On doit retrouver notre pion
 \end{itemize}
+\end{block}
 
 \end{frame}
 
@@ -265,11 +268,11 @@
 
 \end{frame}
 
-
-%  SCORE 
+% SCORE
 \begin{frame}{Mise à jour du score}
 
 \centering
+
 \begin{tikzpicture}
 
 \node[draw, rounded corners, fill=DarkPink] (a) {Compteur rose foncé };
@@ -279,15 +282,17 @@
 
 \vspace{0.3cm}
 
+\begin{block}{Score}
 \begin{itemize}
 \item Double boucle sur la matrice 8×8
 \item Comptage des pions
 \item Complexité constante
 \end{itemize}
+\end{block}
 
 \end{frame}
 
-% CHANGEMENT JOUEUR
+% CHANGEMENT JOUEUR / FIN
 \begin{frame}{Changement de joueur / Fin de partie}
 
 \centering
@@ -303,7 +308,7 @@
 
 \end{tikzpicture}
 
-\vspace{0.4cm}
+\vspace{0.2cm}
 
 \begin{tikzpicture}[node distance=1.2cm]
 
@@ -318,17 +323,19 @@
 
 \end{tikzpicture}
 
-\vspace{0.3cm}
+\vspace{-0.1cm}
 
+\begin{block}{Fin de partie}
 \begin{itemize}
 \item Comptage final des pions
 \item Comparaison des scores
 \item Détermination du gagnant
 \end{itemize}
+\end{block}
 
 \end{frame}
 
-%  COMPLEXITE 
+% COMPLEXITE
 \begin{frame}{Complexité}
 
 \centering
@@ -346,39 +353,36 @@
 
 \vspace{0.4cm}
 
+\begin{block}{Complexité}
 \begin{itemize}
 \item Taille fixe du plateau
 \item Parcours toujours limité
 \item Complexité en pratique : $O(1)$
 \end{itemize}
+\end{block}
 
 \end{frame}
 
-%  CONCLUSION 
+% CONCLUSION
 \begin{frame}{Conclusion Mode joueur contre joueur}
-    \centering
+\centering
 
 \begin{tikzpicture}
 
-    \node (a) [draw, rounded corners, fill=LightPink, minimum width=3cm, minimum height=1cm] 
-    {Joueur vs Joueur};
+\node (a) [draw, rounded corners, fill=LightPink, minimum width=3cm, minimum height=1cm] {Joueur vs Joueur};
 
-    \node (b) [right of=a, xshift=3.5cm, fill=DarkPink, draw, rounded corners, minimum width=3cm, minimum height=1cm] 
-    {Fiabilité du moteur de jeu};
+\node (b) [right of=a, xshift=3.5cm, fill=DarkPink, draw, rounded corners, minimum width=3cm, minimum height=1cm] {Fiabilité du moteur de jeu};
 
-    \node (c) [right of=b, xshift=3.5cm, fill=LightPink, draw, rounded corners, minimum width=3cm, minimum height=1cm] 
-    {Joueur vs IA};
+\node (c) [right of=b, xshift=3.5cm, fill=LightPink, draw, rounded corners, minimum width=3cm, minimum height=1cm] {Joueur vs IA};
 
-    \draw[->, very thick] (a) -- node[above]{} (b);
-    \draw[->, very thick] (b) -- node[above]{} (c);
+\draw[->, very thick] (a) -- (b);
+\draw[->, very thick] (b) -- (c);
 
 \end{tikzpicture}
 
-\vspace{0.1cm}
-\centering
 \vspace{0.3cm}
-\includegraphics[width=0.3\textwidth]{ccls.png}
 
+\includegraphics[width=0.3\textwidth]{ccls.png}
 
 \end{frame}
 
@@ -533,7 +537,7 @@
                     \footnotesize \textit{(Différence des mobilités)}
                 \end{block}
                 \vspace{0.5cm}
-                \item \textbf{L'objectif :} « Étouffer » l'adversaire pour le forcer à jouer sur les cases à malus (adjacentes aux coins).
+                \item \textbf{L'objectif :} "Étouffer" l'adversaire pour le forcer à jouer sur les cases à malus (adjacentes aux coins).
             \end{itemize}
         \end{column}
 
@@ -545,7 +549,7 @@
     \framesubtitle{3. La Stabilité}
     
     \begin{itemize}
-        \item \textbf{Définition :} Un pion est dit « stable » s'il est mathématiquement impossible pour l'adversaire de le retourner d'ici la fin de la partie.
+        \item \textbf{Définition :} Un pion est dit "stable" s'il est mathématiquement impossible pour l'adversaire de le retourner d'ici la fin de la partie.
         \item \textbf{La règle :} La stabilité se propage à partir des coins vers le long des bords.
     \end{itemize}
 
@@ -601,7 +605,7 @@
             \textbf{En début de partie :}
             \vspace{0.2cm}
             \begin{itemize}
-                \item \textbf{Piège :} Trop de pions créent des « cibles » faciles pour l'adversaire.
+                \item \textbf{Piège :} Trop de pions créent des "cibles" faciles pour l'adversaire.
                 \item \textbf{Risque :} Perdre en mobilité.
                 \item \textbf{IA :} Donne un poids \textbf{négligeable} au score (Poids 1).
             \end{itemize}
@@ -693,5 +697,239 @@
 
 %Fin slides Lucile
 
-\end{document}
 
+% --- SLIDE ANDREA  ---
+% --- SLIDE 1  ---
+\begin{frame}
+    \centering
+    \begin{beamercolorbox}[sep=10pt,center,shadow=true,rounded=true]{title}
+        \Huge \textbf{L'Élagage Alpha-Bêta}
+    \end{beamercolorbox}
+    
+    \vspace{0.6cm}
+    {\Large \textcolor{Border}{Optimisation de l'Intelligence Artificielle}}
+
+    \vspace{1.2cm}
+    \begin{tikzpicture}
+        \fill[DarkPink] (0,0) circle (0.3);
+        \fill[LightPink] (1,0) circle (0.3);
+        \fill[DarkPink] (2,0) circle (0.3);
+        \fill[LightPink] (3,0) circle (0.3);
+    \end{tikzpicture}
+\end{frame}
+
+
+% --- SLIDE 2 ---
+\begin{frame}{L'algorithme Alpha-Bêta}
+    \framesubtitle{Principe de l'élagage}
+
+    \begin{columns}[T]
+        \begin{column}{0.55\textwidth}
+            \vspace{0.3cm}
+            \begin{itemize}
+                \item \textbf{Limite de Minimax :} arbre de jeu très grand $\rightarrow$ coût élevé
+                \vspace{0.3cm}
+                \item \textbf{Idée :} ne pas explorer les branches inutiles
+                \vspace{0.3cm}
+                \item \textbf{Élagage :} arrêt dès qu'une branche n'influence plus la décision
+                \vspace{0.3cm}
+                \item \textbf{Avantage :} même résultat que Minimax mais moins de calculs
+            \end{itemize}
+        \end{column}
+        
+        \begin{column}{0.4\textwidth}
+            \begin{block}{Bornes}
+                \begin{itemize}
+                    \item $\alpha$ : meilleur score pour MAX 
+                    \vspace{0.2cm}
+                    \item $\beta$ : meilleur score pour MIN
+                \end{itemize}
+            \end{block}
+            \vspace{0.3cm}
+            \centering
+            \textbf{Condition de coupure :}\\
+            \textcolor{DarkPink}{$\alpha \geq \beta$}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+
+
+
+% --- SLIDE 3  ---
+\begin{frame}{Complexité de l'algorithme Alpha-Bêta}
+
+    \vspace{0.3cm}
+
+    \begin{columns}[T]
+        \begin{column}{0.55\textwidth}
+            \begin{block}{Complexité}
+                \begin{itemize}
+                    \item \textbf{Pire cas :} $O(b^d)$  
+                    \vspace{0.2cm}
+                    \item \textbf{Cas moyen :} $O(b^{3d/4})$ 
+                    \vspace{0.2cm}
+                    \item \textbf{Meilleur cas :} $O(b^{d/2})$ 
+                \end{itemize}
+            \end{block}
+        \end{column}
+
+        \begin{column}{0.4\textwidth}
+            \begin{block}{Dans notre projet}
+                \begin{itemize}
+                    \item $b \approx 10$ coups possibles par tour
+                    \item Profondeur $d = 5$
+                    \vspace{0.2cm}
+                    \item On se situe entre le \textbf{cas moyen} et le \textbf{meilleur cas}
+                \end{itemize}
+                \end{block}
+            \vspace{0.2cm}
+    
+        \end{column}
+    \end{columns}
+    \centering
+            \vspace{0.2cm}
+            \textcolor{DarkPink}{\textbf{Constat :}} \\
+            Explore 2 fois plus de profondeur que Minimax \\
+
+\end{frame}
+
+% --- SLIDE 4 ---
+\begin{frame}{Fonctionnalités du jeu}
+   
+
+    \begin{columns}[T]
+        % Colonne gauche : explications
+        \begin{column}{0.47\textwidth}
+            \vspace{0.6cm}
+            \begin{itemize}
+                \item \textbf{Rejouer :} Relance une nouvelle partie 
+                \vspace{0.45cm}
+                \item \textbf{Menu Principal :} Changer de mode de jeu.
+                \vspace{0.45cm}
+                \item \textbf{Quitter :} Propose de sauvegarder 
+            \end{itemize}
+        \end{column}
+
+        % Colonne droite : capture d'écran menu pause avec flèches
+        \begin{column}{0.5\textwidth}
+            \centering
+            \begin{tikzpicture}
+                \node[inner sep=0] (img) {\includegraphics[width=0.72\textwidth]{menu_pause.png}};
+            \end{tikzpicture}
+        \end{column}
+    \end{columns}
+
+\end{frame}
+
+% --- SLIDE 5 ---
+\begin{frame}{Système de sauvegarde}
+
+    \begin{columns}[T]
+        \begin{column}{0.45\textwidth}
+            \vspace{1.5cm}
+            \begin{enumerate}
+                \item \textbf{Quitter} 
+                \vspace{0.25cm}
+                \item \textbf{Sauvegarder ?} \\
+                \vspace{0.25cm}
+                \textbf{Oui :} Partie enregistrée en local \\
+                \vspace{0.25cm}
+                \textbf{Non :} Partie supprimée
+                \vspace{0.25cm}
+                \item Option : \textbf{"Continuer"} 
+            \end{enumerate}
+        \end{column}
+
+        \begin{column}{0.5\textwidth}
+            \centering
+            \vspace{0.2cm}
+            \includegraphics[width=0.82\textwidth]{popup_save.png}
+            \vspace{0.1cm}
+        \end{column}
+    \end{columns}
+
+\end{frame}
+
+% --- SLIDE 6  ---
+\begin{frame}{Aide visuelle : le bouton "?"}
+
+    \begin{columns}[c]
+        % Photo SANS aide
+        \begin{column}{0.38\textwidth}
+            \centering
+            \includegraphics[width=\textwidth]{plateau_sans_aide.png}
+            \vspace{0.1cm}
+        \end{column}
+
+        % Flèche centrale
+        \begin{column}{0.18\textwidth}
+            \centering
+            \begin{tikzpicture}
+                \draw[->, DarkPink, line width=3pt] (0,0) -- (1.8,0);
+                \node[above, font=\tiny, text=Border] at (0.9, 0.1) {Bouton "?"};
+            \end{tikzpicture}
+        \end{column}
+
+        % Photo AVEC aide
+        \begin{column}{0.38\textwidth}
+            \centering
+            \includegraphics[width=\textwidth]{plateau_avec_aide.png}
+            \vspace{0.1cm}
+            \small\textcolor{DarkPink}{\textit{Les coups possibles s'affichent}}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+% --- SLIDE 7  ---
+\begin{frame}{Conclusion générale}
+
+   \vspace{0.3cm}
+
+    \begin{block}{Ce qu'on a réalisé}
+        Un jeu Othello complet en C : logique du jeu, IA, interface graphique et fonctionnalités utilisateur.
+    \end{block}
+
+    \vspace{0.6 cm}
+    \begin{columns}[T]
+        \begin{column}{0.45\textwidth}
+            \textbf{Côté technique :}
+            \begin{itemize}
+                \item Mode Joueur vs Joueur $\rightarrow$ IA
+                \item Minimax + Alpha-Bêta
+                \item A* non adapté
+            \end{itemize}
+        \end{column}
+
+        \begin{column}{0.45\textwidth}
+            \textbf{Côté utilisateur :}
+            \begin{itemize}
+                \item Interface Raylib 
+                \item Sauvegarde locale
+                \item Aide visuelle et menu complet
+            \end{itemize}
+        \end{column}
+    \end{columns}
+
+    \vspace{0.7cm}
+
+\end{frame}
+
+% --- SLIDE FINALE ---
+\begin{frame}
+    \centering
+    \vspace{1cm}
+    {\Huge \textcolor{DarkPink}{\textbf{Merci pour votre écoute}}}
+
+    \vspace{1.2cm}
+    \begin{tikzpicture}
+        \fill[DarkPink] (0,0) circle (0.3);
+        \fill[LightPink] (1,0) circle (0.3);
+        \fill[DarkPink] (2,0) circle (0.3);
+        \fill[LightPink] (3,0) circle (0.3);
+        \fill[DarkPink] (4,0) circle (0.3);
+        \fill[LightPink] (5,0) circle (0.3);
+    \end{tikzpicture}
+\end{frame}
+
+\end{document}
