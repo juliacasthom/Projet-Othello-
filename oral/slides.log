@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.5.3)  3 MAY 2026 16:24
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.5.3)  3 MAY 2026 16:27
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -902,7 +902,7 @@ LaTeX Font Info:    Font shape `T1/phv/m/it' in size <6> not available
 <menu_pause.png, id=306, 448.67625pt x 506.89375pt>
 File: menu_pause.png Graphic file (type png)
 <use menu_pause.png>
-Package pdftex.def Info: menu_pause.png  used on input line 822.
+Package pdftex.def Info: menu_pause.png  used on input line 819.
 (pdftex.def)             Requested size: 156.68988pt x 177.02101pt.
  [24
 
@@ -910,7 +910,7 @@ Package pdftex.def Info: menu_pause.png  used on input line 822.
 <popup_save.png, id=315, 372.39125pt x 368.37625pt>
 File: popup_save.png Graphic file (type png)
 <use popup_save.png>
-Package pdftex.def Info: popup_save.png  used on input line 851.
+Package pdftex.def Info: popup_save.png  used on input line 848.
 (pdftex.def)             Requested size: 178.45366pt x 176.5319pt.
  [25
 
@@ -918,15 +918,15 @@ Package pdftex.def Info: popup_save.png  used on input line 851.
 <plateau_sans_aide.png, id=325, 578.16pt x 694.595pt>
 File: plateau_sans_aide.png Graphic file (type png)
 <use plateau_sans_aide.png>
-Package pdftex.def Info: plateau_sans_aide.png  used on input line 881.
+Package pdftex.def Info: plateau_sans_aide.png  used on input line 878.
 (pdftex.def)             Requested size: 165.39673pt x 198.70354pt.
 <plateau_avec_aide.png, id=326, 578.16pt x 694.595pt>
 File: plateau_avec_aide.png Graphic file (type png)
 <use plateau_avec_aide.png>
-Package pdftex.def Info: plateau_avec_aide.png  used on input line 881.
+Package pdftex.def Info: plateau_avec_aide.png  used on input line 878.
 (pdftex.def)             Requested size: 156.68988pt x 188.24266pt.
 
-Overfull \vbox (7.61606pt too high) detected at line 881
+Overfull \vbox (7.61606pt too high) detected at line 878
  []
 
 [26
@@ -954,15 +954,15 @@ Package rerunfilecheck Info: File `slides.out' has not changed.
 (rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
  ) 
 Here is how much of TeX's memory you used:
- 27707 strings out of 467525
- 547203 string characters out of 5418983
+ 27703 strings out of 467525
+ 547134 string characters out of 5418983
  942431 words of memory out of 5000000
- 56007 multiletter control sequences out of 15000+600000
+ 56003 multiletter control sequences out of 15000+600000
  691145 words of font info for 104 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  128i,15n,123p,456b,997s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi5.pfb></usr/local/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/local/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmss10.pfb></usr/local/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2026/texmf-dist/fonts/type1/urw/helvetic/uhvb8a.pfb></usr/local/texlive/2026/texmf-dist/fonts/type1/urw/helvetic/uhvr8a.pfb></usr/local/texlive/2026/texmf-dist/fonts/type1/urw/helvetic/uhvro8a.pfb>
-Output written on slides.pdf (28 pages, 243752 bytes).
+Output written on slides.pdf (28 pages, 243594 bytes).
 PDF statistics:
  412 PDF objects out of 1000 (max. 8388607)
  253 compressed objects within 3 object streams
