@@ -5,6 +5,10 @@
 \usepackage{graphicx}
 \usepackage{helvet}
 \usepackage{tikz}
+\usepackage{lmodern}
+\usepackage{ae,aecompl}
+\usepackage{textcomp}
+\usepackage{microtype}
 \usetikzlibrary{positioning}
 \usepackage{colortbl}
 
@@ -75,24 +79,24 @@
 \begin{columns}
 
 \begin{column}{0.5\textwidth}
+\begin{block}{Mode joueur contre joueur}
 \begin{itemize}
 \item Deux joueurs humains
 \item Base du projet
 \item Nécessaire pour l’IA
 \end{itemize}
+\end{block}
 \end{column}
 
-% IMAGE
 \begin{column}{0.5\textwidth}
 \centering
 \includegraphics[width=\textwidth]{J-vs-J.png}
 \end{column}
 
 \end{columns}
-
 \end{frame}
 
-%  PLATEAU 
+% PLATEAU
 \begin{frame}{Plateau 8×8}
 
 \centering
@@ -100,7 +104,6 @@
 \begin{tikzpicture}[scale=0.5]
 \draw (0,0) grid (4,4);
 
-% centre
 \fill[DarkPink] (1.5,1.5) circle (0.2);
 \fill[DarkPink] (2.5,2.5) circle (0.2);
 \fill[LightPink] (1.5,2.5) circle (0.2);
@@ -111,14 +114,16 @@
 
 \vspace{0.3cm}
 
+\begin{block}{Plateau}
 \begin{itemize}
 \item Matrice 2D
 \item 3 états (vide / rose foncé / rose clair)
 \end{itemize}
+\end{block}
 
 \end{frame}
 
-% BOUCLE 
+% BOUCLE
 \begin{frame}{Boucle du jeu}
 
 \centering
@@ -141,7 +146,7 @@
 
 \end{frame}
 
-% DIRECTIONS 
+% DIRECTIONS
 \begin{frame}{Validation : 8 directions}
 
 \centering
@@ -151,7 +156,6 @@
 
 \fill[DarkPink] (1.5,1.5) circle (0.15);
 
-% directions
 \draw[->, thick] (1.5,1.5) -- (1.5,2.7);
 \draw[->, thick] (1.5,1.5) -- (1.5,0.3);
 \draw[->, thick] (1.5,1.5) -- (2.7,1.5);
@@ -167,48 +171,47 @@
 
 \vspace{0.2cm}
 
+\begin{block}{Validation}
 \begin{itemize}
 \item 8 directions testées
 \item Recherche “sandwich”
 \end{itemize}
+\end{block}
 
 \end{frame}
 
-%SCHEMA VALIDATION 
+% VALIDATION COUP
 \begin{frame}{Validation d’un coup (exemple)}
 
 \centering
 
 \begin{tikzpicture}[scale=0.8]
 
-% grille
 \draw (0,0) grid (5,1);
 
-% pions
-\fill[DarkPink] (0.5,0.5) circle (0.3);   % joueur
-\fill[LightPink] (1.5,0.5) circle (0.3);  % adversaire
-\fill[LightPink] (2.5,0.5) circle (0.3);  % adversaire
-\fill[LightPink] (3.5,0.5) circle (0.3);  % adversaire
+\fill[DarkPink] (0.5,0.5) circle (0.3);
+\fill[LightPink] (1.5,0.5) circle (0.3);
+\fill[LightPink] (2.5,0.5) circle (0.3);
+\fill[LightPink] (3.5,0.5) circle (0.3);
 
-% case jouée (vide → futur coup)
 \draw[thick, dashed] (4,0) rectangle (5,1);
 \node at (4.5,0.5) {?};
 
-% flèche
 \draw[->, thick] (4.5,1.2) -- (3.5,1.2);
 
-% annotation
 \node at (2.5,-0.8) {On encadre les pions adverses};
 
 \end{tikzpicture}
 
 \vspace{0.4cm}
 
+\begin{block}{Validation}
 \begin{itemize}
 \item Case voisine adverse obligatoire
 \item On avance dans la direction
 \item On doit retrouver notre pion
 \end{itemize}
+\end{block}
 
 \end{frame}
 
@@ -265,11 +268,11 @@
 
 \end{frame}
 
-
-%  SCORE 
+% SCORE
 \begin{frame}{Mise à jour du score}
 
 \centering
+
 \begin{tikzpicture}
 
 \node[draw, rounded corners, fill=DarkPink] (a) {Compteur rose foncé };
@@ -279,15 +282,17 @@
 
 \vspace{0.3cm}
 
+\begin{block}{Score}
 \begin{itemize}
 \item Double boucle sur la matrice 8×8
 \item Comptage des pions
 \item Complexité constante
 \end{itemize}
+\end{block}
 
 \end{frame}
 
-% CHANGEMENT JOUEUR
+% CHANGEMENT JOUEUR / FIN
 \begin{frame}{Changement de joueur / Fin de partie}
 
 \centering
@@ -303,7 +308,7 @@
 
 \end{tikzpicture}
 
-\vspace{0.4cm}
+\vspace{0.2cm}
 
 \begin{tikzpicture}[node distance=1.2cm]
 
@@ -318,17 +323,19 @@
 
 \end{tikzpicture}
 
-\vspace{0.3cm}
+\vspace{-0.1cm}
 
+\begin{block}{Fin de partie}
 \begin{itemize}
 \item Comptage final des pions
 \item Comparaison des scores
 \item Détermination du gagnant
 \end{itemize}
+\end{block}
 
 \end{frame}
 
-%  COMPLEXITE 
+% COMPLEXITE
 \begin{frame}{Complexité}
 
 \centering
@@ -346,39 +353,36 @@
 
 \vspace{0.4cm}
 
+\begin{block}{Complexité}
 \begin{itemize}
 \item Taille fixe du plateau
 \item Parcours toujours limité
 \item Complexité en pratique : $O(1)$
 \end{itemize}
+\end{block}
 
 \end{frame}
 
-%  CONCLUSION 
+% CONCLUSION
 \begin{frame}{Conclusion Mode joueur contre joueur}
-    \centering
+\centering
 
 \begin{tikzpicture}
 
-    \node (a) [draw, rounded corners, fill=LightPink, minimum width=3cm, minimum height=1cm] 
-    {Joueur vs Joueur};
+\node (a) [draw, rounded corners, fill=LightPink, minimum width=3cm, minimum height=1cm] {Joueur vs Joueur};
 
-    \node (b) [right of=a, xshift=3.5cm, fill=DarkPink, draw, rounded corners, minimum width=3cm, minimum height=1cm] 
-    {Fiabilité du moteur de jeu};
+\node (b) [right of=a, xshift=3.5cm, fill=DarkPink, draw, rounded corners, minimum width=3cm, minimum height=1cm] {Fiabilité du moteur de jeu};
 
-    \node (c) [right of=b, xshift=3.5cm, fill=LightPink, draw, rounded corners, minimum width=3cm, minimum height=1cm] 
-    {Joueur vs IA};
+\node (c) [right of=b, xshift=3.5cm, fill=LightPink, draw, rounded corners, minimum width=3cm, minimum height=1cm] {Joueur vs IA};
 
-    \draw[->, very thick] (a) -- node[above]{} (b);
-    \draw[->, very thick] (b) -- node[above]{} (c);
+\draw[->, very thick] (a) -- (b);
+\draw[->, very thick] (b) -- (c);
 
 \end{tikzpicture}
 
-\vspace{0.1cm}
-\centering
 \vspace{0.3cm}
-\includegraphics[width=0.3\textwidth]{ccls.png}
 
+\includegraphics[width=0.3\textwidth]{ccls.png}
 
 \end{frame}
 
@@ -797,7 +801,7 @@
     \begin{columns}[T]
         % Colonne gauche : explications
         \begin{column}{0.47\textwidth}
-            \vspace{1.5cm}
+            \vspace{0.6cm}
             \begin{itemize}
                 \item \textbf{Rejouer :} Relance une nouvelle partie 
                 \vspace{0.45cm}
@@ -812,6 +816,9 @@
             \centering
             \begin{tikzpicture}
                 \node[inner sep=0] (img) {\includegraphics[width=0.72\textwidth]{menu_pause.png}};
+                \draw[->, DarkPink, very thick] (-3.2, 0.75) -- (-1.6, 0.75);
+                \draw[->, DarkPink, very thick] (-3.2, 0.0)  -- (-1.6, 0.0);
+                \draw[->, DarkPink, very thick] (-3.2, -0.75) -- (-1.6, -0.75);
             \end{tikzpicture}
         \end{column}
     \end{columns}
@@ -868,7 +875,7 @@
         \end{column}
 
         % Photo AVEC aide
-        \begin{column}{0.36\textwidth}
+        \begin{column}{0.38\textwidth}
             \centering
             \includegraphics[width=\textwidth]{plateau_avec_aide.png}
             \vspace{0.1cm}
