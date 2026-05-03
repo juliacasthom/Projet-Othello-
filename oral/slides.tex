@@ -693,5 +693,242 @@
 
 %Fin slides Lucile
 
-\end{document}
 
+% --- SLIDE ANDREA  ---
+% --- SLIDE 1  ---
+\begin{frame}
+    \centering
+    \begin{beamercolorbox}[sep=10pt,center,shadow=true,rounded=true]{title}
+        \Huge \textbf{L'Élagage Alpha-Bêta}
+    \end{beamercolorbox}
+    
+    \vspace{0.6cm}
+    {\Large \textcolor{Border}{Optimisation de l'Intelligence Artificielle}}
+
+    \vspace{1.2cm}
+    \begin{tikzpicture}
+        \fill[DarkPink] (0,0) circle (0.3);
+        \fill[LightPink] (1,0) circle (0.3);
+        \fill[DarkPink] (2,0) circle (0.3);
+        \fill[LightPink] (3,0) circle (0.3);
+    \end{tikzpicture}
+\end{frame}
+
+
+% --- SLIDE 2 ---
+\begin{frame}{L'algorithme Alpha-Bêta}
+    \framesubtitle{Principe de l'élagage}
+
+    \begin{columns}[T]
+        \begin{column}{0.55\textwidth}
+            \vspace{0.3cm}
+            \begin{itemize}
+                \item \textbf{Limite de Minimax :} arbre de jeu très grand $\rightarrow$ coût élevé
+                \vspace{0.3cm}
+                \item \textbf{Idée :} ne pas explorer les branches inutiles
+                \vspace{0.3cm}
+                \item \textbf{Élagage :} arrêt dès qu'une branche n'influence plus la décision
+                \vspace{0.3cm}
+                \item \textbf{Avantage :} même résultat que Minimax mais moins de calculs
+            \end{itemize}
+        \end{column}
+        
+        \begin{column}{0.4\textwidth}
+            \begin{block}{Bornes}
+                \begin{itemize}
+                    \item $\alpha$ : meilleur score pour MAX 
+                    \vspace{0.2cm}
+                    \item $\beta$ : meilleur score pour MIN
+                \end{itemize}
+            \end{block}
+            \vspace{0.3cm}
+            \centering
+            \textbf{Condition de coupure :}\\
+            \textcolor{DarkPink}{$\alpha \geq \beta$}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+
+
+
+% --- SLIDE 3  ---
+\begin{frame}{Complexité de l'algorithme Alpha-Bêta}
+
+    \vspace{0.3cm}
+
+    \begin{columns}[T]
+        \begin{column}{0.55\textwidth}
+            \begin{block}{Complexité}
+                \begin{itemize}
+                    \item \textbf{Pire cas :} $O(b^d)$  
+                    \vspace{0.2cm}
+                    \item \textbf{Cas moyen :} $O(b^{3d/4})$ 
+                    \vspace{0.2cm}
+                    \item \textbf{Meilleur cas :} $O(b^{d/2})$ 
+                \end{itemize}
+            \end{block}
+        \end{column}
+
+        \begin{column}{0.4\textwidth}
+            \begin{block}{Dans notre projet}
+                \begin{itemize}
+                    \item $b \approx 10$ coups possibles par tour
+                    \item Profondeur $d = 5$
+                    \vspace{0.2cm}
+                    \item On se situe entre le \textbf{cas moyen} et le \textbf{meilleur cas}
+                \end{itemize}
+                \end{block}
+            \vspace{0.2cm}
+    
+        \end{column}
+    \end{columns}
+    \centering
+            \vspace{0.2cm}
+            \textcolor{DarkPink}{\textbf{Constat :}} \\
+            Explore 2 fois plus de profondeur que Minimax \\
+
+\end{frame}
+
+% --- SLIDE 4 ---
+\begin{frame}{Fonctionnalités du jeu}
+   
+
+    \begin{columns}[T]
+        % Colonne gauche : explications
+        \begin{column}{0.47\textwidth}
+            \vspace{0.6cm}
+            \begin{itemize}
+                \item \textbf{Rejouer :} Relance une nouvelle partie 
+                \vspace{0.45cm}
+                \item \textbf{Menu Principal :} Changer de mode de jeu.
+                \vspace{0.45cm}
+                \item \textbf{Quitter :} Propose de sauvegarder 
+            \end{itemize}
+        \end{column}
+
+        % Colonne droite : capture d'écran menu pause avec flèches
+        \begin{column}{0.5\textwidth}
+            \centering
+            \begin{tikzpicture}
+                \node[inner sep=0] (img) {\includegraphics[width=0.72\textwidth]{menu_pause.png}};
+                \draw[->, DarkPink, very thick] (-3.2, 0.75) -- (-1.6, 0.75);
+                \draw[->, DarkPink, very thick] (-3.2, 0.0)  -- (-1.6, 0.0);
+                \draw[->, DarkPink, very thick] (-3.2, -0.75) -- (-1.6, -0.75);
+            \end{tikzpicture}
+        \end{column}
+    \end{columns}
+
+\end{frame}
+
+% --- SLIDE 5 ---
+\begin{frame}{Système de sauvegarde}
+
+    \begin{columns}[T]
+        \begin{column}{0.45\textwidth}
+            \vspace{1.5cm}
+            \begin{enumerate}
+                \item \textbf{Quitter} 
+                \vspace{0.25cm}
+                \item \textbf{Sauvegarder ?} \\
+                \vspace{0.25cm}
+                \textbf{Oui :} Partie enregistrée en local \\
+                \vspace{0.25cm}
+                \textbf{Non :} Partie supprimée
+                \vspace{0.25cm}
+                \item Option : \textbf{« Continuer »} 
+            \end{enumerate}
+        \end{column}
+
+        \begin{column}{0.5\textwidth}
+            \centering
+            \vspace{0.2cm}
+            \includegraphics[width=0.82\textwidth]{popup_save.png}
+            \vspace{0.1cm}
+        \end{column}
+    \end{columns}
+
+\end{frame}
+
+% --- SLIDE 6  ---
+\begin{frame}{Aide visuelle : le bouton « ? »}
+
+    \begin{columns}[c]
+        % Photo SANS aide
+        \begin{column}{0.38\textwidth}
+            \centering
+            \includegraphics[width=\textwidth]{plateau_sans_aide.png}
+            \vspace{0.1cm}
+        \end{column}
+
+        % Flèche centrale
+        \begin{column}{0.18\textwidth}
+            \centering
+            \begin{tikzpicture}
+                \draw[->, DarkPink, line width=3pt] (0,0) -- (1.8,0);
+                \node[above, font=\tiny, text=Border] at (0.9, 0.1) {Bouton « ? »};
+            \end{tikzpicture}
+        \end{column}
+
+        % Photo AVEC aide
+        \begin{column}{0.38\textwidth}
+            \centering
+            \includegraphics[width=\textwidth]{plateau_avec_aide.png}
+            \vspace{0.1cm}
+            \small\textcolor{DarkPink}{\textit{Les coups possibles s'affichent}}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+% --- SLIDE 7  ---
+\begin{frame}{Conclusion générale}
+
+   \vspace{0.3cm}
+
+    \begin{block}{Ce qu'on a réalisé}
+        Un jeu Othello complet en C : logique du jeu, IA, interface graphique et fonctionnalités utilisateur.
+    \end{block}
+
+    \vspace{0.6 cm}
+    \begin{columns}[T]
+        \begin{column}{0.45\textwidth}
+            \textbf{Côté technique :}
+            \begin{itemize}
+                \item Mode Joueur vs Joueur $\rightarrow$ IA
+                \item Minimax + Alpha-Bêta
+                \item A* non adapté
+            \end{itemize}
+        \end{column}
+
+        \begin{column}{0.45\textwidth}
+            \textbf{Côté utilisateur :}
+            \begin{itemize}
+                \item Interface Raylib 
+                \item Sauvegarde locale
+                \item Aide visuelle et menu complet
+            \end{itemize}
+        \end{column}
+    \end{columns}
+
+    \vspace{0.7cm}
+
+\end{frame}
+
+% --- SLIDE FINALE ---
+\begin{frame}
+    \centering
+    \vspace{1cm}
+    {\Huge \textcolor{DarkPink}{\textbf{Merci pour votre écoute}}}
+
+    \vspace{1.2cm}
+    \begin{tikzpicture}
+        \fill[DarkPink] (0,0) circle (0.3);
+        \fill[LightPink] (1,0) circle (0.3);
+        \fill[DarkPink] (2,0) circle (0.3);
+        \fill[LightPink] (3,0) circle (0.3);
+        \fill[DarkPink] (4,0) circle (0.3);
+        \fill[LightPink] (5,0) circle (0.3);
+    \end{tikzpicture}
+\end{frame}
+
+\end{document}
